@@ -45,6 +45,9 @@ def parse_scope(scope: str | None) -> tuple[str, str, str]:
         fri = t - timedelta(days=t.weekday()) + timedelta(days=4)
         sun = fri + timedelta(days=2)
         return fri.isoformat(), sun.isoformat(), f"Weekend ({fri}–{sun})"
+    if s in ("ahead", "upcoming", "next", "next7"):   # ROLLING 7-day window — not Monday-locked
+        d = t + timedelta(days=7)
+        return t.isoformat(), d.isoformat(), f"Next 7 days ({t}–{d})"
     if ":" in s:                         # custom range
         a, b = s.split(":", 1)
         return a.strip(), b.strip(), f"{a.strip()} to {b.strip()}"

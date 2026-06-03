@@ -62,4 +62,4 @@ export async function chatBuild(message: string): Promise<ChatResp> {
   return r.json();
 }
 
-export const SCOPES = ["today", "tomorrow", "week", "weekend"];
+export const SCOPES = ["today", "tomorrow", "weekend", "week", "ahead"];

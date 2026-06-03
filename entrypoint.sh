@@ -2,7 +2,7 @@
 # Runs the auto-refresh loop AND the API in one container.
 set -u
 cd /app
-PORT="${PORT:-8000}"; SCOPE="${SCOPE:-week}"; REFRESH_HOURS="${REFRESH_HOURS:-6}"
+PORT="${PORT:-8000}"; SCOPE="${SCOPE:-ahead}"; REFRESH_HOURS="${REFRESH_HOURS:-12}"
 BOARD="${BOARD:-2000}"; ENRICH="${ENRICH:-2000}"
 
 echo "[entrypoint] initial refresh: scope=$SCOPE (proxy: ${SCRAPER_PROXY:+set}${SCRAPER_PROXY:-none})"

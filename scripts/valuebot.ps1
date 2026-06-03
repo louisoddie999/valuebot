@@ -1,4 +1,4 @@
-param([string]$Scope = "week", [int]$RefreshHours = 6, [int]$Board = 2000, [int]$Enrich = 2000)
+param([string]$Scope = "ahead", [int]$RefreshHours = 12, [int]$Board = 2000, [int]$Enrich = 2000)
 $ErrorActionPreference = 'Stop'
 $proj = Split-Path -Parent $PSScriptRoot
 Set-Location $proj

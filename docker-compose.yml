@@ -7,8 +7,8 @@ services:
       - GOOGLE_AI_API_KEY=${GOOGLE_AI_API_KEY}
       - GEMINI_MODEL=${GEMINI_MODEL:-gemini-2.5-flash}
       - SCRAPER_PROXY=${SCRAPER_PROXY}        # residential/NG proxy for Sofascore + SportyBet
-      - SCOPE=${SCOPE:-week}
-      - REFRESH_HOURS=${REFRESH_HOURS:-6}
+      - SCOPE=${SCOPE:-ahead}
+      - REFRESH_HOURS=${REFRESH_HOURS:-12}
       - DB_PATH=data/serve.sqlite
     volumes:
       - ./data:/app/data                       # persist DB (enrichment grows it) across restarts
