@@ -145,6 +145,114 @@ def settle_market(mid: str, spec, desc, R) -> bool | None:
     return None
 
 
+def _bnum(spec, key):
+    import re as _re
+    for part in (spec or "").split("|"):
+        if part.startswith(key + "="):
+            m = _re.search(r"(-?[0-9]+\.?[0-9]*)", part.split("=", 1)[1])
+            if m: return float(m.group(1))
+    return None
+
+
+def fetch_basketball_result(sofa_id):
+    from src.ingest import sofascore_basketball as sbk
+    ev = sbk._get(f"/event/{sofa_id}")
+    if not ev:
+        return None
+    e = ev.get("event") or ev
+    if (e.get("status", {}) or {}).get("type") != "finished":
+        return None
+    hs, as_ = e.get("homeScore", {}), e.get("awayScore", {})
+    h, a = hs.get("current"), as_.get("current")
+    if h is None or a is None:
+        return None
+    q = [(hs.get(f"period{i}") or 0, as_.get(f"period{i}") or 0) for i in range(1, 5)]
+    return {"h": h, "a": a, "q": q,
+            "reg_h": sum(x[0] for x in q), "reg_a": sum(x[1] for x in q)}
+
+
+def settle_basketball(mid, spec, desc, R):
+    """Grade a basketball selection vs final + period scores. None = push/unknown."""
+    d = (desc or "").lower()
+    mid = str(mid)
+    h, a = R["h"], R["a"]
+    q = R["q"]
+    qn = _bnum(spec, "quarternr")
+
+    def half(first):  # first=True -> Q1+Q2, else Q3+Q4
+        idx = (0, 1) if first else (2, 3)
+        return sum(q[i][0] for i in idx), sum(q[i][1] for i in idx)
+
+    def quarter():
+        if qn is None or not (1 <= int(qn) <= 4):
+            return None
+        return q[int(qn) - 1]
+
+    # ---- totals ----
+    if mid in ("225",):                       # full game incl OT
+        ln = _bnum(spec, "total"); 
+        return None if ln is None else ((h + a > ln) if "over" in d else (h + a < ln))
+    if mid in ("18",):                        # regulation total
+        ln = _bnum(spec, "total")
+        return None if ln is None else ((R["reg_h"] + R["reg_a"] > ln) if "over" in d else (R["reg_h"] + R["reg_a"] < ln))
+    if mid in ("68", "90"):                   # 1st / 2nd half total
+        ln = _bnum(spec, "total"); hh, ha = half(mid == "68")
+        return None if ln is None else ((hh + ha > ln) if "over" in d else (hh + ha < ln))
+    if mid == "236":                          # quarter total
+        ln = _bnum(spec, "total"); qq = quarter()
+        if ln is None or qq is None: return None
+        return (qq[0] + qq[1] > ln) if "over" in d else (qq[0] + qq[1] < ln)
+
+    # ---- team totals ----
+    if mid in ("227", "228"):                 # home / away full
+        ln = _bnum(spec, "total"); v = h if mid == "227" else a
+        return None if ln is None else ((v > ln) if "over" in d else (v < ln))
+    if mid in ("69", "70"):                    # home / away 1st half
+        ln = _bnum(spec, "total"); hh, ha = half(True); v = hh if mid == "69" else ha
+        return None if ln is None else ((v > ln) if "over" in d else (v < ln))
+    if mid in ("756", "757"):                  # quarter team total
+        ln = _bnum(spec, "total"); qq = quarter()
+        if ln is None or qq is None: return None
+        v = qq[0] if mid == "756" else qq[1]
+        return (v > ln) if "over" in d else (v < ln)
+
+    # ---- handicap / spread (home hcp negative if favored) ----
+    if mid in ("223", "66", "88", "303"):
+        hcp = _bnum(spec, "hcp")
+        if hcp is None: return None
+        if mid == "223": mh, ma = h, a
+        elif mid == "66": mh, ma = half(True)
+        elif mid == "88": mh, ma = half(False)
+        else:
+            qq = quarter()
+            if qq is None: return None
+            mh, ma = qq
+        margin = mh - ma
+        if "home" in d: return margin > (-hcp)
+        if "away" in d: return margin < (-hcp)
+        return None
+
+    # ---- moneyline / 1x2 / DNB ----
+    if mid in ("219", "1", "60", "83", "235", "11", "64", "86"):
+        if mid in ("219", "1"): mh, ma = h, a
+        elif mid in ("60", "64"): mh, ma = half(True)
+        elif mid in ("83", "86"): mh, ma = half(False)
+        elif mid == "235":
+            qq = quarter()
+            if qq is None: return None
+            mh, ma = qq
+        else: mh, ma = h, a
+        if mh == ma:
+            return None  # tie -> push/void (DNB) or rare draw
+        winner = "home" if mh > ma else "away"
+        if "home" in d: return winner == "home"
+        if "away" in d: return winner == "away"
+        if "draw" in d: return False
+        return None
+
+    return None
+
+
 def run() -> dict:
     init_schema()
     now = datetime.now(timezone.utc).isoformat()
@@ -152,20 +260,26 @@ def run() -> dict:
     with connect() as conn:
         feat = {r["sb_event_id"]: r["sf_event_id"]
                 for r in conn.execute("SELECT sb_event_id, sf_event_id FROM sf_features").fetchall()}
+        bbfeat = {r["sb_event_id"]: r["sofa_event"]
+                  for r in conn.execute("SELECT sb_event_id, sofa_event FROM bb_features").fetchall()}
         pend = conn.execute(
             "SELECT * FROM tracked_picks WHERE status='pending' AND (kickoff IS NULL OR kickoff < ?)",
             (now,)).fetchall()
         cache: dict = {}
         for p in pend:
-            sfid = feat.get(p["sb_event_id"])
+            is_bball = p["sb_event_id"] in bbfeat
+            sfid = bbfeat.get(p["sb_event_id"]) if is_bball else feat.get(p["sb_event_id"])
             if not sfid:
                 continue
-            R = cache.get(sfid)
-            if R is None and sfid not in cache:
-                R = fetch_result(sfid); cache[sfid] = R
+            ck = ("b" if is_bball else "f", sfid)
+            R = cache.get(ck)
+            if ck not in cache:
+                R = fetch_basketball_result(sfid) if is_bball else fetch_result(sfid)
+                cache[ck] = R
             if not R:
                 continue
-            w = settle_market(p["market_id"], p["specifier"], p["outcome_desc"], R)
+            w = (settle_basketball if is_bball else settle_market)(
+                p["market_id"], p["specifier"], p["outcome_desc"], R)
             if w is None:
                 status, result = "unknown", None
             else:
