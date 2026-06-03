@@ -19,6 +19,7 @@ from pathlib import Path
 
 from src.db.db import connect, load_config, PROJECT_ROOT
 from src.models import projector, calibration
+from src.models import elo as _elo
 
 
 # ---------------- date scope ----------------
@@ -120,6 +121,7 @@ def load_model_legs(min_odds: float, max_odds: float, min_conf: float,
             (min_odds, max_odds, start_date, end_date),
         ).fetchall()
         cal = calibration.load_curve(conn, "football")   # per-sport learned correction
+        _eloidx = _elo.load_index(conn)   # live Elo (top-5; absent -> no effect)
 
     legs = []
     for r in odds_rows:
@@ -127,6 +129,7 @@ def load_model_legs(min_odds: float, max_odds: float, min_conf: float,
         if not f:
             continue
         f["_market_name"] = r["market_name"]   # for card-market detection
+        f["elo_sup"] = _elo.live_sup(r["home_team"], r["away_team"], _eloidx)
         mp = projector.model_prob_for(f, r["market_id"], r["specifier"], r["outcome_desc"])
         if mp is None:
             continue

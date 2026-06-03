@@ -57,6 +57,68 @@ class Ledger:
         return supremacy(self.get(home), self.get(away))
 
 
+
+
+# ---- persistent ratings for LIVE use (built from matches history) ----
+import unicodedata
+from difflib import SequenceMatcher
+
+
+def _norm(name):
+    s = unicodedata.normalize("NFKD", name or "").encode("ascii", "ignore").decode().lower()
+    s = "".join(c if (c.isalnum() or c == " ") else " " for c in s)
+    drop = {"fc","cf","afc","sc","ac","club","de","cd","ca","sad","ssd","calcio","if","fk","bk","sk"}
+    return " ".join(t for t in s.split() if t and t not in drop).strip() or s.strip()
+
+
+def build_team_table(conn):
+    """Walk all matches in date order -> current Elo per team -> store in team_elo."""
+    import pandas as pd
+    m = pd.read_sql_query("SELECT home_team,away_team,fthg,ftag FROM matches WHERE fthg IS NOT NULL ORDER BY date", conn)
+    L = Ledger()
+    for r in m.itertuples(index=False):
+        L.feed(r.home_team, r.away_team, r.fthg, r.ftag)
+    conn.execute("CREATE TABLE IF NOT EXISTS team_elo (team TEXT PRIMARY KEY, norm TEXT, rating REAL, updated_at TEXT)")
+    conn.execute("DELETE FROM team_elo")
+    from datetime import datetime, timezone
+    now = datetime.now(timezone.utc).isoformat()
+    for team, rating in L.r.items():
+        conn.execute("INSERT OR REPLACE INTO team_elo(team,norm,rating,updated_at) VALUES (?,?,?,?)",
+                     (team, _norm(team), round(rating, 1), now))
+    conn.commit()
+    return len(L.r)
+
+
+def load_index(conn):
+    """{norm_name: rating} for live fuzzy matching."""
+    try:
+        return {r[0]: r[1] for r in conn.execute("SELECT norm, rating FROM team_elo")}
+    except Exception:
+        return {}
+
+
+def rating_for(name, index):
+    """Fuzzy-match a live team name to a stored Elo rating, else None."""
+    if not index:
+        return None
+    n = _norm(name)
+    if n in index:
+        return index[n]
+    best, sc = None, 0.0
+    for k, v in index.items():
+        r = SequenceMatcher(None, n, k).ratio()
+        if r > sc:
+            best, sc = v, r
+    return best if sc >= 0.82 else None
+
+
+def live_sup(home_name, away_name, index):
+    rh = rating_for(home_name, index); ra = rating_for(away_name, index)
+    if rh is None or ra is None:
+        return None
+    return supremacy(rh, ra)
+
+
 if __name__ == "__main__":
     L = Ledger()
     # strong home team beats weak away repeatedly -> rating gap widens, sup -> +1

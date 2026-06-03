@@ -67,6 +67,14 @@ def run(scope: str, board_cap: int, enrich_cap: int, bball: bool = True):
     try:
         _log("Step 3/3: settling results + recalibrating model ...", lines)
         s = settle.run()
+        try:
+            from src.models import elo as _elo
+            from src.db.db import connect as _conn
+            with _conn() as _c:
+                _n = _elo.build_team_table(_c)
+            _log(f"  Elo ratings rebuilt: {_n} teams", lines)
+        except Exception as e:
+            _log(f"  ! elo rebuild failed: {e}", lines)
         cal = calibration.recalibrate()
         bits = []
         for sp, v in cal.items():
