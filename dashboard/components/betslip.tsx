@@ -129,7 +129,7 @@ function BetslipDock() {
     <>
       {/* floating button */}
       <button onClick={() => setOpen(true)}
-        className="fixed bottom-5 right-5 z-50 flex items-center gap-2.5 rounded-full bg-accent px-5 py-3 text-black font-semibold shadow-lg shadow-accent/20 hover:brightness-110 transition">
+        className="fixed bottom-20 right-5 sm:bottom-5 z-50 flex items-center gap-2.5 rounded-full bg-accent px-5 py-3 text-black font-semibold shadow-lg shadow-accent/20 hover:brightness-110 transition">
         <Ticket size={18} />
         <span className="tnum">{items.length}</span>
         {items.length > 0 && <span className="tnum text-sm opacity-80">@ {combined.toFixed(2)}</span>}

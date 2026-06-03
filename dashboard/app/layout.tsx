@@ -14,7 +14,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body>
         <BetslipProvider>
           <Nav />
-          <main className="mx-auto max-w-6xl px-5 py-7">{children}</main>
+          <main className="mx-auto max-w-6xl px-5 pt-7 pb-24 sm:pb-7">{children}</main>
           <footer className="mx-auto max-w-6xl px-5 py-8 text-xs text-muted/70 tnum">
             Predictions from data — form · goals · H2H · corners · half-time · injuries · rest.
             Calibrated, validated. Not financial advice.

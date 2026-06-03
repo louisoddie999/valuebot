@@ -115,26 +115,35 @@ const NAV = [
 
 export function Nav() {
   const path = usePathname();
+  const isActive = (href: string) => (href === "/" ? path === "/" : path.startsWith(href));
   return (
-    <header className="sticky top-0 z-40 border-b border-border bg-bg/80 backdrop-blur-md">
-      <div className="mx-auto max-w-6xl px-5 h-14 flex items-center justify-between">
-        <Link href="/" className="flex items-center gap-2.5">
-          <span className="grid place-items-center h-7 w-7 rounded-md bg-primaryDeep text-white font-mono font-bold text-sm">V</span>
-          <span className="font-mono font-semibold tracking-tight">VALUE<span className="text-primary">BOT</span></span>
-        </Link>
-        <nav className="flex items-center gap-1">
-          {NAV.map(({ href, label, icon: Icon }) => {
-            const active = href === "/" ? path === "/" : path.startsWith(href);
-            return (
+    <>
+      <header className="sticky top-0 z-40 border-b border-border bg-bg/80 backdrop-blur-md">
+        <div className="mx-auto max-w-6xl px-5 h-14 flex items-center justify-between">
+          <Link href="/" className="flex items-center gap-2.5">
+            <span className="grid place-items-center h-7 w-7 rounded-md bg-primaryDeep text-white font-mono font-bold text-sm">V</span>
+            <span className="font-mono font-semibold tracking-tight">VALUE<span className="text-primary">BOT</span></span>
+          </Link>
+          <nav className="hidden sm:flex items-center gap-1">
+            {NAV.map(({ href, label, icon: Icon }) => (
               <Link key={href} href={href}
-                className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm transition-colors ${active ? "bg-surface2 text-text" : "text-muted hover:text-text hover:bg-surface"}`}>
+                className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm transition-colors ${isActive(href) ? "bg-surface2 text-text" : "text-muted hover:text-text hover:bg-surface"}`}>
                 <Icon size={15} /> {label}
               </Link>
-            );
-          })}
-        </nav>
-      </div>
-    </header>
+            ))}
+          </nav>
+        </div>
+      </header>
+      {/* mobile bottom tab bar */}
+      <nav className="sm:hidden fixed bottom-0 inset-x-0 z-40 grid grid-cols-4 border-t border-border bg-bg/95 backdrop-blur-md pb-[env(safe-area-inset-bottom)]">
+        {NAV.map(({ href, label, icon: Icon }) => (
+          <Link key={href} href={href}
+            className={`flex flex-col items-center justify-center gap-0.5 py-2.5 text-[11px] transition-colors ${isActive(href) ? "text-primary" : "text-muted"}`}>
+            <Icon size={19} /> {label}
+          </Link>
+        ))}
+      </nav>
+    </>
   );
 }
 

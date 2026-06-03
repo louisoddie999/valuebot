@@ -74,6 +74,15 @@ def run(scope: str, board_cap: int, enrich_cap: int):
     _log(f"DONE. events={ev} enriched={ft} fixtures_in_scope={in_scope}. "
          f"Dashboard now live with fresh data.", lines)
 
+    # 4. push top slips to Telegram (no-op if TELEGRAM_* creds not set in .env)
+    try:
+        from src.notify import telegram
+        res = telegram.run(scope)
+        _log("Telegram: sent top slips" if res.get("ok")
+             else f"Telegram: skipped ({res.get('error', 'no creds')})", lines)
+    except Exception as e:
+        _log(f"  ! telegram push failed: {e}", lines)
+
     logdir = PROJECT_ROOT / "reports"
     logdir.mkdir(exist_ok=True)
     (logdir / f"daily_{datetime.now(timezone.utc).strftime('%Y%m%d_%H%M')}.log").write_text(
