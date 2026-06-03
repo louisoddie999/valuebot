@@ -28,8 +28,53 @@ export default function AccuracyPage() {
         Validated walk-forward on {d.validated_matches.toLocaleString()} matches — no look-ahead. Does an X% prediction land ~X%?
       </p>
 
+      {d.live_calibration && (() => {
+        const lc = d.live_calibration;
+        const pct = Math.min(100, Math.round((lc.n_total / lc.min_required) * 100));
+        return (
+          <Card className="p-5 mb-5 border-accent/30">
+            <div className="flex items-center justify-between mb-3">
+              <h2 className="font-mono font-semibold">Self-learning calibration {lc.active
+                ? <span className="text-good text-xs ml-1">● LIVE</span>
+                : <span className="text-accent text-xs ml-1">● learning</span>}</h2>
+              <span className="text-xs text-muted tnum">{lc.n_total} / {lc.min_required} settled picks</span>
+            </div>
+            {!lc.active ? (
+              <>
+                <div className="h-2 w-full rounded-full bg-surface2 overflow-hidden">
+                  <div className="h-full rounded-full bg-accent" style={{ width: `${pct}%` }} />
+                </div>
+                <p className="text-xs text-muted mt-3">
+                  ValueBot is recording its own results. Once {lc.min_required} picks settle, it auto-corrects
+                  future confidence toward its real hit-rate. {lc.min_required - lc.n_total} more to go.
+                </p>
+              </>
+            ) : (
+              <>
+                <div className="grid gap-3">
+                  {lc.buckets.filter((b: any) => b.n > 0).map((b: any) => (
+                    <div key={b.range} className="grid grid-cols-[80px_1fr_auto] items-center gap-3">
+                      <span className="tnum text-sm text-muted">{b.range}</span>
+                      <div className="h-2 w-full rounded-full bg-surface2 overflow-hidden">
+                        <div className="h-full rounded-full bg-good" style={{ width: `${b.actual ?? 0}%` }} />
+                      </div>
+                      <span className="tnum text-sm">
+                        <span className="text-muted">{b.predicted}% →</span> <span className="font-semibold text-good">{b.actual}%</span>
+                        <span className="text-muted/60 ml-2">n={b.n}</span>
+                        {b.offset !== 0 && <span className={`ml-2 ${b.offset < 0 ? "text-bad" : "text-good"}`}>{b.offset > 0 ? "+" : ""}{(b.offset * 100).toFixed(0)}pp</span>}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+                <p className="text-xs text-muted mt-4">Live correction from {lc.n_total} of your own settled picks — confidence now reflects real results.</p>
+              </>
+            )}
+          </Card>
+        );
+      })()}
+
       <Card className="p-5 mb-5">
-        <h2 className="font-mono font-semibold mb-4">Calibration — predicted vs actual</h2>
+        <h2 className="font-mono font-semibold mb-4">Baseline calibration — predicted vs actual (backtest)</h2>
         <div className="grid gap-3">
           {d.calibration.map((c: any) => (
             <div key={c.bucket} className="grid grid-cols-[80px_1fr_auto] items-center gap-3">
