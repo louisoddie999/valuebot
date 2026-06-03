@@ -52,11 +52,17 @@ def health():
 
 
 @app.get("/api/fixtures")
-def fixtures(scope: str = "today"):
+def fixtures(scope: str = "today", sport: str = "football"):
     start_d, end_d, label = parse_scope(scope)
     acc = _cfg()
-    legs = load_model_legs(acc["min_leg_odds"], acc["max_leg_odds"],
-                           acc.get("min_confidence", 0.65), start_d, end_d)
+    if sport == "basketball":
+        from src.punter.accumulator_builder import load_basketball_legs
+        legs = load_basketball_legs(acc.get("min_confidence", 0.65), start_d, end_d)
+        feat_table, sports = "bb_features", ("Basketball",)
+    else:
+        legs = load_model_legs(acc["min_leg_odds"], acc["max_leg_odds"],
+                               acc.get("min_confidence", 0.65), start_d, end_d)
+        feat_table, sports = "sf_features", ("Football", "Soccer")
     top = {}
     for l in legs:
         cur = top.get(l["event_id"])
@@ -66,14 +72,15 @@ def fixtures(scope: str = "today"):
                                   "market_id": l["market_id"], "specifier": l["specifier"],
                                   "outcome_id": l["outcome_id"]}
 
+    ph = ",".join(["?"] * len(sports))
     with connect() as c:
         rows = c.execute(
-            """SELECT e.event_id, e.home_team, e.away_team, e.tournament, e.category, e.kickoff_ts,
-                      (SELECT 1 FROM sf_features f WHERE f.sb_event_id=e.event_id) AS enriched
+            f"""SELECT e.event_id, e.home_team, e.away_team, e.tournament, e.category, e.kickoff_ts,
+                      (SELECT 1 FROM {feat_table} f WHERE f.sb_event_id=e.event_id) AS enriched
                FROM sb_events e
-               WHERE substr(e.kickoff_ts,1,10) BETWEEN ? AND ?
-               ORDER BY e.kickoff_ts""", (start_d, end_d)).fetchall()
-        updated = c.execute("SELECT MAX(computed_at) FROM sf_features").fetchone()[0]
+               WHERE e.sport IN ({ph}) AND substr(e.kickoff_ts,1,10) BETWEEN ? AND ?
+               ORDER BY e.kickoff_ts""", (*sports, start_d, end_d)).fetchall()
+        updated = c.execute(f"SELECT MAX(computed_at) FROM {feat_table}").fetchone()[0]
 
     out = []
     for r in rows:
@@ -82,7 +89,7 @@ def fixtures(scope: str = "today"):
             "league": r["tournament"], "country": r["category"], "kickoff": r["kickoff_ts"],
             "enriched": bool(r["enriched"]), "top_pick": top.get(r["event_id"]),
         })
-    return {"scope": label, "start": start_d, "end": end_d, "count": len(out),
+    return {"scope": label, "sport": sport, "start": start_d, "end": end_d, "count": len(out),
             "updated": updated, "fixtures": out}
 
 
@@ -121,17 +128,21 @@ def match(event_id: str):
 
 
 @app.get("/api/slips")
-def slips(scope: str = "today"):
+def slips(scope: str = "today", sport: str = "football"):
     start_d, end_d, label = parse_scope(scope)
     cfg = load_config()
     acc = cfg["accumulators"]
-    legs = load_model_legs(acc["min_leg_odds"], acc["max_leg_odds"],
-                           acc.get("min_confidence", 0.65), start_d, end_d)
+    if sport == "basketball":
+        from src.punter.accumulator_builder import load_basketball_legs
+        legs = load_basketball_legs(acc.get("min_confidence", 0.65), start_d, end_d)
+    else:
+        legs = load_model_legs(acc["min_leg_odds"], acc["max_leg_odds"],
+                               acc.get("min_confidence", 0.65), start_d, end_d)
     BOOK_CAP = 40  # SportyBet betslip holds 50 selections; stay under so every sub-slip loads
     plan = {  # tier -> (chunk_size, max_sub_slips)  longshot = MANY legs split into bookable chunks
         "SAFE": (5, 6), "MID": (12, 4), "LONGSHOT": (BOOK_CAP, None),
     }
-    result = {"scope": label, "leg_pool": len(legs), "tiers": {}}
+    result = {"scope": label, "sport": sport, "leg_pool": len(legs), "tiers": {}}
     for tier, t in acc["tiers"].items():
         csize, maxc = plan.get(tier, (t["max_legs"] or BOOK_CAP, None))
         chunks = build_slip_chunks(legs, t["min_legs"], t["leg_min"], t["leg_max"], csize, maxc)
