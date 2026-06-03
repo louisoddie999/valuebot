@@ -96,9 +96,21 @@ def parse_intent(text: str) -> dict:
     """Lightweight fallback NL parse (used if Gemini is not configured)."""
     t = text.lower()
     out: dict = {"scope": "today", "count": 1}
-    for kw, sc in [("weekend", "weekend"), ("week", "week"), ("tomorrow", "tomorrow"), ("today", "today")]:
-        if kw in t:
-            out["scope"] = sc; break
+    _wd = {"monday": 0, "tuesday": 1, "wednesday": 2, "thursday": 3,
+           "friday": 4, "saturday": 5, "sunday": 6}
+    _hit_day = next((n for n in _wd if n in t), None)
+    if _hit_day:
+        from datetime import date, timedelta
+        td = date.today()
+        out["scope"] = (td + timedelta(days=(_wd[_hit_day] - td.weekday()) % 7)).isoformat()
+    else:
+        for kw, sc in [("weekend", "weekend"), ("week", "week"), ("tomorrow", "tomorrow"), ("today", "today")]:
+            if kw in t:
+                out["scope"] = sc; break
+    for _tn in ("longshot", "long shot", "mid", "safe"):
+        if _tn in t:
+            out["tier"] = "longshot" if "long" in _tn else _tn
+            break
     m = re.search(r"(\d+(?:\.\d+)?)\s*(?:odds|odd)", t)
     if m:
         out["target_odds"] = float(m.group(1))

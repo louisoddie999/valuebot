@@ -27,8 +27,9 @@ export function fmtKick(iso?: string): string {
   try { return new Date(iso).toLocaleString([], { weekday: "short", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }); }
   catch { return ""; }
 }
-export type Slip = { combined_odds: number; hit_estimate: number; legs: SlipLeg[] } | null;
-export type Slips = { scope: string; leg_pool: number; tiers: Record<string, Slip> };
+export type Slip = { combined_odds: number; hit_estimate: number; legs: SlipLeg[] };
+// each tier is now a LIST of sub-slips (LONGSHOT 1/2…, multiple SAFE/MID) — every sub-slip <= 40 legs so it loads in SportyBet
+export type Slips = { scope: string; leg_pool: number; tiers: Record<string, Slip[]> };
 
 async function get<T>(path: string): Promise<T> {
   const r = await fetch(`${API}${path}`, { cache: "no-store" });
@@ -37,8 +38,10 @@ async function get<T>(path: string): Promise<T> {
 }
 
 export const getFixtures = (scope: string) =>
-  get<{ scope: string; start: string; end: string; count: number; fixtures: Fixture[] }>(`/api/fixtures?scope=${encodeURIComponent(scope)}`);
-export const getMatch = (id: string) => get<MatchDetail>(`/api/match/${encodeURIComponent(id)}`);
+  get<{ scope: string; start: string; end: string; count: number; updated?: string | null; fixtures: Fixture[] }>(`/api/fixtures?scope=${encodeURIComponent(scope)}`);
+// normalize: decode first (param may arrive already-encoded) then encode once → never double-encode
+const enc1 = (id: string) => { try { return encodeURIComponent(decodeURIComponent(id)); } catch { return encodeURIComponent(id); } };
+export const getMatch = (id: string) => get<MatchDetail>(`/api/match/${enc1(id)}`);
 export const getSlips = (scope: string) => get<Slips>(`/api/slips?scope=${encodeURIComponent(scope)}`);
 export const getAccuracy = () => get<any>(`/api/accuracy`);
 export const getResults = () => get<any>(`/api/results`);

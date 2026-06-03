@@ -1,6 +1,6 @@
 "use client";
 import { createContext, useContext, useEffect, useState, useCallback } from "react";
-import { Ticket, X, Trash2, Plus, Check, ExternalLink, Lock, Unlock, Save, FolderOpen } from "lucide-react";
+import { Ticket, X, Trash2, Plus, Check, ExternalLink, Lock, Unlock, Save, FolderOpen, Copy, Share2 } from "lucide-react";
 import { createBooking, fmtKick } from "@/lib/api";
 import { ConfChip, Odds } from "@/components/ui";
 
@@ -104,8 +104,17 @@ function BetslipDock() {
   const [code, setCode] = useState<{ code: string; url: string } | null>(null);
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState("");
+  const [copied, setCopied] = useState(false);
 
-  useEffect(() => { setCode(null); setErr(""); }, [items.length]);
+  useEffect(() => { setCode(null); setErr(""); setCopied(false); }, [items.length]);
+
+  const shareText = code
+    ? `ValueBot slip — ${items.length} legs @ ${combined.toFixed(2)} odds\nSportyBet code: ${code.code}\n${code.url}`
+    : "";
+  async function copyCode() {
+    if (!code) return;
+    try { await navigator.clipboard.writeText(code.code); setCopied(true); setTimeout(() => setCopied(false), 1800); } catch {}
+  }
 
   async function book() {
     setBusy(true); setErr(""); setCode(null);
@@ -196,6 +205,16 @@ function BetslipDock() {
                   <div className="rounded-lg bg-accent/10 border border-accent/30 p-3 text-center">
                     <div className="text-xs text-muted">SportyBet booking code</div>
                     <div className="font-mono text-3xl font-bold text-accent tracking-widest my-1">{code.code}</div>
+                    <div className="flex items-center gap-2 my-2">
+                      <button onClick={copyCode}
+                        className="flex flex-1 items-center justify-center gap-1.5 rounded-lg border border-border bg-surface py-2 text-sm text-text hover:border-accent/50 transition">
+                        {copied ? <><Check size={14} className="text-good" /> copied</> : <><Copy size={14} /> copy code</>}
+                      </button>
+                      <a href={`https://wa.me/?text=${encodeURIComponent(shareText)}`} target="_blank" rel="noreferrer"
+                        className="flex flex-1 items-center justify-center gap-1.5 rounded-lg border border-border bg-surface py-2 text-sm text-text hover:border-good/50 transition">
+                        <Share2 size={14} /> share
+                      </a>
+                    </div>
                     <a href={code.url} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 text-sm text-primary hover:underline">
                       Open in SportyBet <ExternalLink size={14} />
                     </a>

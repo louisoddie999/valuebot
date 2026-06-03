@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { Sparkles, Send, Plus, Ticket } from "lucide-react";
+import { Sparkles, Send, Plus, Ticket, Copy, Check } from "lucide-react";
 import { chatBuild, createBooking, fmtKick, BuildSlip } from "@/lib/api";
 import { Card, ConfChip, Odds } from "@/components/ui";
 import { useBetslip } from "@/components/betslip";
@@ -107,12 +107,24 @@ export function BuildChat() {
 function BookBtn({ legs }: { legs: BuildSlip["legs"] }) {
   const [code, setCode] = useState<{ code: string; url: string } | null>(null);
   const [busy, setBusy] = useState(false);
+  const [copied, setCopied] = useState(false);
   async function go() {
     setBusy(true);
     try { const r = await createBooking(legs as any); setCode({ code: r.shareCode, url: r.shareURL }); }
     catch {} finally { setBusy(false); }
   }
-  if (code) return <a href={code.url} target="_blank" rel="noreferrer" className="font-mono text-sm font-bold text-accent tracking-wider">{code.code} ↗</a>;
+  async function copy() {
+    if (!code) return;
+    try { await navigator.clipboard.writeText(code.code); setCopied(true); setTimeout(() => setCopied(false), 1800); } catch {}
+  }
+  if (code) return (
+    <span className="flex items-center gap-2">
+      <a href={code.url} target="_blank" rel="noreferrer" className="font-mono text-sm font-bold text-accent tracking-wider">{code.code} ↗</a>
+      <button onClick={copy} aria-label="copy code" className="text-muted hover:text-accent">
+        {copied ? <Check size={14} className="text-good" /> : <Copy size={14} />}
+      </button>
+    </span>
+  );
   return (
     <button onClick={go} disabled={busy} className="flex items-center gap-1 rounded-md bg-accent px-2.5 py-1 text-xs font-semibold text-black hover:brightness-110 disabled:opacity-50">
       <Ticket size={13} /> {busy ? "…" : "Book"}

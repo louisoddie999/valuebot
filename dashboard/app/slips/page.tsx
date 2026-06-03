@@ -3,31 +3,45 @@ import { useEffect, useState } from "react";
 import { Layers } from "lucide-react";
 import { getSlips, createBooking, fmtKick, Slips, Slip, SCOPES } from "@/lib/api";
 import { Card, ConfChip, Odds, Spinner, ScopeTabs } from "@/components/ui";
-import { Ticket, ExternalLink } from "lucide-react";
+import { Ticket, ExternalLink, Copy, Check, Share2 } from "lucide-react";
 import { BuildChat } from "@/components/buildchat";
 
 const TIERS = ["SAFE", "MID", "LONGSHOT"];
 const TIER_DESC: Record<string, string> = {
-  SAFE: "3–5 legs · high confidence", MID: "6–12 legs · balanced", LONGSHOT: "15+ legs · stacked",
+  SAFE: "3–5 legs · high confidence", MID: "6–12 legs · balanced",
+  LONGSHOT: "stacked · auto-split into bookable slips",
 };
 
 export default function SlipsPage() {
   const [scope, setScope] = useState("today");
   const [tier, setTier] = useState("SAFE");
+  const [sub, setSub] = useState(0);
   const [data, setData] = useState<Slips | null>(null);
   const [err, setErr] = useState("");
   const [booking, setBooking] = useState<{ code: string; url: string } | null>(null);
   const [bookingBusy, setBookingBusy] = useState(false);
   const [bookErr, setBookErr] = useState("");
+  const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     setData(null); setErr("");
     getSlips(scope).then(setData).catch((e) => setErr(String(e)));
   }, [scope]);
 
-  useEffect(() => { setBooking(null); setBookErr(""); }, [scope, tier]);
+  useEffect(() => { setSub(0); }, [tier, scope]);
+  useEffect(() => { setBooking(null); setBookErr(""); setCopied(false); }, [scope, tier, sub]);
 
-  const slip: Slip = data?.tiers?.[tier] ?? null;
+  const subSlips: Slip[] = data?.tiers?.[tier] ?? [];
+  const slip: Slip | null = subSlips[sub] ?? null;
+  const label = subSlips.length > 1 ? `${tier} ${sub + 1}` : tier;
+
+  async function copyCode() {
+    if (!booking) return;
+    try { await navigator.clipboard.writeText(booking.code); setCopied(true); setTimeout(() => setCopied(false), 1800); } catch {}
+  }
+  const shareText = booking && slip
+    ? `ValueBot ${label} slip — ${slip.legs.length} legs\nSportyBet code: ${booking.code}\n${booking.url}`
+    : "";
 
   async function book() {
     if (!slip) return;
@@ -35,7 +49,7 @@ export default function SlipsPage() {
     try {
       const r = await createBooking(slip.legs);
       setBooking({ code: r.shareCode, url: r.shareURL });
-    } catch (e) {
+    } catch {
       setBookErr("Could not generate code — try again.");
     } finally {
       setBookingBusy(false);
@@ -49,20 +63,40 @@ export default function SlipsPage() {
           <h1 className="font-mono text-2xl font-bold tracking-tight">Accumulator Builder</h1>
           <p className="text-muted text-sm mt-1 tnum">{data ? `${data.leg_pool} qualifying predictions` : "…"}</p>
         </div>
-        <ScopeTabs value={scope} onChange={setScope} scopes={SCOPES} />
+        <div className="flex items-center gap-2">
+          <ScopeTabs value={scope} onChange={setScope} scopes={SCOPES} />
+          <input type="date" value={/^\d{4}-\d{2}-\d{2}$/.test(scope) ? scope : ""}
+            onChange={(e) => e.target.value && setScope(e.target.value)}
+            aria-label="Pick a date"
+            className="rounded-lg border border-border bg-surface px-3 py-2 text-sm tnum text-text outline-none focus:border-primary [color-scheme:dark]" />
+        </div>
       </div>
 
       <BuildChat />
 
-      <div className="flex gap-2 mb-5">
-        {TIERS.map((t) => (
-          <button key={t} onClick={() => setTier(t)}
-            className={`flex-1 rounded-lg border p-3 text-left transition-colors ${tier === t ? "border-primary bg-primary/10" : "border-border bg-surface hover:border-primary/40"}`}>
-            <div className="font-mono font-semibold flex items-center gap-2"><Layers size={15} /> {t}</div>
-            <div className="text-xs text-muted mt-0.5">{TIER_DESC[t]}</div>
-          </button>
-        ))}
+      <div className="flex gap-2 mb-3">
+        {TIERS.map((t) => {
+          const n = data?.tiers?.[t]?.length ?? 0;
+          return (
+            <button key={t} onClick={() => setTier(t)}
+              className={`flex-1 rounded-lg border p-3 text-left transition-colors ${tier === t ? "border-primary bg-primary/10" : "border-border bg-surface hover:border-primary/40"}`}>
+              <div className="font-mono font-semibold flex items-center gap-2"><Layers size={15} /> {t}{n > 1 && <span className="text-xs text-accent tnum">×{n}</span>}</div>
+              <div className="text-xs text-muted mt-0.5">{TIER_DESC[t]}</div>
+            </button>
+          );
+        })}
       </div>
+
+      {subSlips.length > 1 && (
+        <div className="flex flex-wrap gap-1.5 mb-4">
+          {subSlips.map((s, i) => (
+            <button key={i} onClick={() => setSub(i)}
+              className={`rounded-md border px-3 py-1.5 text-xs tnum transition-colors ${sub === i ? "border-accent bg-accent/10 text-accent" : "border-border text-muted hover:text-text"}`}>
+              {tier} {i + 1} · {s.legs.length} legs · {s.combined_odds.toFixed(0)}
+            </button>
+          ))}
+        </div>
+      )}
 
       {err && <Card className="p-5 text-bad text-sm">API error: {err}</Card>}
       {!data && !err && <Spinner label="Building slips…" />}
@@ -73,7 +107,7 @@ export default function SlipsPage() {
         <Card className="overflow-hidden">
           <div className="flex items-center justify-between gap-4 border-b border-border bg-surface2 px-5 py-4">
             <div>
-              <div className="text-xs text-muted">{tier} · {slip.legs.length} legs</div>
+              <div className="text-xs text-muted">{label} · {slip.legs.length} legs</div>
               <div className="font-mono text-3xl font-bold text-primary tnum">{slip.combined_odds.toFixed(2)}</div>
             </div>
             <div className="flex items-center gap-4">
@@ -95,6 +129,13 @@ export default function SlipsPage() {
                 <div className="flex flex-wrap items-center gap-4">
                   <span className="text-sm text-muted">SportyBet code:</span>
                   <span className="font-mono text-2xl font-bold text-accent tracking-widest">{booking.code}</span>
+                  <button onClick={copyCode} className="flex items-center gap-1.5 rounded-md border border-border bg-surface px-2.5 py-1 text-sm text-text hover:border-accent/50 transition">
+                    {copied ? <><Check size={14} className="text-good" /> copied</> : <><Copy size={14} /> copy</>}
+                  </button>
+                  <a href={`https://wa.me/?text=${encodeURIComponent(shareText)}`} target="_blank" rel="noreferrer"
+                    className="flex items-center gap-1.5 rounded-md border border-border bg-surface px-2.5 py-1 text-sm text-text hover:border-good/50 transition">
+                    <Share2 size={14} /> share
+                  </a>
                   <a href={booking.url} target="_blank" rel="noreferrer"
                     className="flex items-center gap-1.5 text-sm text-primary hover:underline">
                     Open in SportyBet <ExternalLink size={14} />

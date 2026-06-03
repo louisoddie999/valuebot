@@ -1,7 +1,75 @@
 "use client";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Activity, LayoutGrid, Layers, BarChart3, History } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Activity, LayoutGrid, Layers, BarChart3, History, Info, Clock } from "lucide-react";
+
+export function Skeleton({ rows = 6 }: { rows?: number }) {
+  return (
+    <div className="grid gap-2.5">
+      {Array.from({ length: rows }).map((_, i) => (
+        <div key={i} className="rounded-xl border border-border bg-surface/60 p-4 animate-pulse">
+          <div className="h-2.5 w-40 rounded bg-surface2 mb-2.5" />
+          <div className="h-4 w-56 rounded bg-surface2" />
+        </div>
+      ))}
+    </div>
+  );
+}
+
+// Loading state that warns about Render cold-start if the fetch is slow.
+export function LoadingState({ rows = 6 }: { rows?: number }) {
+  const [slow, setSlow] = useState(false);
+  useEffect(() => { const t = setTimeout(() => setSlow(true), 3500); return () => clearTimeout(t); }, []);
+  return (
+    <div>
+      {slow && (
+        <div className="mb-4 flex items-center gap-2 rounded-lg border border-accent/30 bg-accent/10 px-4 py-2.5 text-sm text-accent">
+          <Activity size={15} className="animate-pulse" />
+          Waking the server… first load after idle takes ~50s. Hang tight.
+        </div>
+      )}
+      <Skeleton rows={rows} />
+    </div>
+  );
+}
+
+export function ConfidenceLegend() {
+  const items = [
+    { c: "bg-good", t: "≥80% — high" },
+    { c: "bg-primary", t: "65–80% — solid" },
+    { c: "bg-accent", t: "50–65% — lean" },
+  ];
+  return (
+    <div className="group relative inline-flex items-center gap-2 text-xs text-muted">
+      <Info size={13} /> <span>confidence</span>
+      <span className="flex items-center gap-2 tnum">
+        {items.map((i) => (
+          <span key={i.t} className="flex items-center gap-1">
+            <span className={`h-2 w-2 rounded-full ${i.c}`} /> {i.t}
+          </span>
+        ))}
+      </span>
+      <span className="pointer-events-none absolute left-0 top-6 z-20 w-64 rounded-lg border border-border bg-surface2 p-2.5 text-[11px] text-muted opacity-0 shadow-xl transition-opacity group-hover:opacity-100">
+        Validated on 8,263 matches: an 80% pick lands ~81% of the time. Color = how confident the data is.
+      </span>
+    </div>
+  );
+}
+
+export function Freshness({ iso }: { iso?: string | null }) {
+  if (!iso) return null;
+  let txt = "";
+  try {
+    const h = (Date.now() - new Date(iso).getTime()) / 36e5;
+    txt = h < 1 ? "just now" : h < 24 ? `${Math.round(h)}h ago` : `${Math.round(h / 24)}d ago`;
+  } catch { return null; }
+  return (
+    <span className="inline-flex items-center gap-1 text-xs text-muted/70 tnum">
+      <Clock size={12} /> updated {txt}
+    </span>
+  );
+}
 
 export function confColor(c: number) {
   if (c >= 0.8) return "text-good border-good/40 bg-good/10";

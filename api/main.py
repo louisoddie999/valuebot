@@ -26,7 +26,7 @@ load_dotenv()  # load GOOGLE_AI_API_KEY from project-root .env
 
 from src.db.db import connect, load_config
 from src.models import projector
-from src.punter.accumulator_builder import parse_scope, load_model_legs, build_slip
+from src.punter.accumulator_builder import parse_scope, load_model_legs, build_slip, build_slip_chunks
 from src.punter.build_engine import apply_filters, build_n_variants, parse_intent
 from src.booking.sportybet_booking import create_booking_code
 from src.results.settle import run as settle_run
@@ -73,6 +73,7 @@ def fixtures(scope: str = "today"):
                FROM sb_events e
                WHERE substr(e.kickoff_ts,1,10) BETWEEN ? AND ?
                ORDER BY e.kickoff_ts""", (start_d, end_d)).fetchall()
+        updated = c.execute("SELECT MAX(computed_at) FROM sf_features").fetchone()[0]
 
     out = []
     for r in rows:
@@ -81,7 +82,8 @@ def fixtures(scope: str = "today"):
             "league": r["tournament"], "country": r["category"], "kickoff": r["kickoff_ts"],
             "enriched": bool(r["enriched"]), "top_pick": top.get(r["event_id"]),
         })
-    return {"scope": label, "start": start_d, "end": end_d, "count": len(out), "fixtures": out}
+    return {"scope": label, "start": start_d, "end": end_d, "count": len(out),
+            "updated": updated, "fixtures": out}
 
 
 @app.get("/api/match/{event_id}")
@@ -125,22 +127,27 @@ def slips(scope: str = "today"):
     acc = cfg["accumulators"]
     legs = load_model_legs(acc["min_leg_odds"], acc["max_leg_odds"],
                            acc.get("min_confidence", 0.65), start_d, end_d)
+    BOOK_CAP = 40  # SportyBet betslip holds 50 selections; stay under so every sub-slip loads
+    plan = {  # tier -> (chunk_size, max_sub_slips)  longshot = MANY legs split into bookable chunks
+        "SAFE": (5, 6), "MID": (12, 4), "LONGSHOT": (BOOK_CAP, None),
+    }
     result = {"scope": label, "leg_pool": len(legs), "tiers": {}}
     for tier, t in acc["tiers"].items():
-        slip = build_slip(legs, t["min_legs"], t["max_legs"], t["leg_min"], t["leg_max"])
-        if slip:
-            result["tiers"][tier] = {
-                "combined_odds": slip["combined_odds"],
-                "hit_estimate": round(slip["combined_prob"] * 100, 3),
+        csize, maxc = plan.get(tier, (t["max_legs"] or BOOK_CAP, None))
+        chunks = build_slip_chunks(legs, t["min_legs"], t["leg_min"], t["leg_max"], csize, maxc)
+        result["tiers"][tier] = [
+            {
+                "combined_odds": s["combined_odds"],
+                "hit_estimate": round(s["combined_prob"] * 100, 3),
                 "legs": [{"match": l["match"], "market": l["market"], "selection": l["selection"],
                           "confidence": round(l["prob"], 4), "odds": l["odds"], "reason": l["reason"],
                           "event_id": l["event_id"], "market_id": l["market_id"],
                           "specifier": l["specifier"], "outcome_id": l["outcome_id"],
                           "league": l["tournament"], "country": l["country"], "kickoff": l["kickoff"]}
-                         for l in slip["legs"]],
+                         for l in s["legs"]],
             }
-        else:
-            result["tiers"][tier] = None
+            for s in chunks
+        ]
     return result
 
 
@@ -276,7 +283,8 @@ def _gemini_intent(message: str) -> dict | None:
         schema = {
             "type": "object",
             "properties": {
-                "scope": {"type": "string", "enum": ["today", "tomorrow", "week", "weekend"]},
+                "scope": {"type": "string"},
+                "tier": {"type": "string", "enum": ["safe", "mid", "longshot"]},
                 "target_odds": {"type": "number"},
                 "count": {"type": "integer"},
                 "target_legs": {"type": "integer"},
@@ -286,8 +294,14 @@ def _gemini_intent(message: str) -> dict | None:
                 "reply": {"type": "string"},
             },
         }
+        from datetime import date as _date
+        _t = _date.today()
         prompt = ("You translate a football punter's request into slip-builder parameters. "
-                  "NEVER invent matches or odds — only extract intent. Fields: scope (today/tomorrow/week/weekend), "
+                  "NEVER invent matches or odds — only extract intent. "
+                  f"Today is {_t.isoformat()} ({_t.strftime('%A')}). "
+                  "Fields: scope (the concrete day the user means: 'today','tomorrow','week','weekend', "
+                  "a weekday name like 'saturday', or an exact YYYY-MM-DD date), "
+                  "tier (safe=few legs / mid / longshot=MANY legs - NOTE longshot means MORE legs stacked, NEVER higher per-leg odds), "
                   "target_odds (desired combined odds), count (how many different slips), target_legs, "
                   "league, market (e.g. 'over/under','corner'), min_conf (0-1), and a short friendly 'reply'. "
                   f"Request: {message}")
@@ -303,6 +317,29 @@ def _gemini_intent(message: str) -> dict | None:
         return None
 
 
+_TIER_LEGS = {"safe": 4, "mid": 9, "longshot": 22}
+_WEEKDAYS = {"monday": 0, "tuesday": 1, "wednesday": 2, "thursday": 3,
+             "friday": 4, "saturday": 5, "sunday": 6}
+
+
+def _resolve_scope(scope: str, message: str = "") -> str:
+    """Turn 'saturday'/'this sat'/weekday words into a concrete YYYY-MM-DD; pass known scopes through."""
+    from datetime import date, timedelta
+    import re as _re
+    s = (scope or "").strip().lower()
+    blob = f"{s} {message}".lower()
+    if _re.match(r"^\d{4}-\d{2}-\d{2}", s):
+        return s
+    if s in ("today", "tomorrow", "week", "weekend") and not any(w in blob for w in _WEEKDAYS):
+        return s
+    t = date.today()
+    for name, wd in _WEEKDAYS.items():
+        if name in blob:
+            delta = (wd - t.weekday()) % 7
+            return (t + timedelta(days=delta)).isoformat()
+    return s if s else "today"
+
+
 class ChatReq(BaseModel):
     message: str
 
@@ -311,11 +348,17 @@ class ChatReq(BaseModel):
 def chat(req: ChatReq):
     gi = _gemini_intent(req.message)
     params = gi or parse_intent(req.message)
+    scope = _resolve_scope(params.get("scope") or "today", req.message)
+    tier = (params.get("tier") or "").lower()
+    target_legs = params.get("target_legs")
+    if not target_legs and tier in _TIER_LEGS:
+        target_legs = _TIER_LEGS[tier]
+    params["scope"] = scope
     res = _run_build(
-        params.get("scope", "today"),
+        scope,
         target_odds=params.get("target_odds"),
         count=params.get("count", 1) or 1,
-        target_legs=params.get("target_legs"),
+        target_legs=target_legs,
         league=params.get("league"),
         market=params.get("market"),
         min_conf=params.get("min_conf"),

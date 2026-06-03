@@ -3,7 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { ChevronRight, Filter } from "lucide-react";
 import { getFixtures, Fixture, SCOPES } from "@/lib/api";
-import { Card, ConfChip, Odds, Spinner, ScopeTabs } from "@/components/ui";
+import { Card, ConfChip, Odds, ScopeTabs, LoadingState, ConfidenceLegend, Freshness } from "@/components/ui";
 import { AddButton } from "@/components/betslip";
 
 export default function FixturesPage() {
@@ -13,10 +13,12 @@ export default function FixturesPage() {
   const [range, setRange] = useState<{ start: string; end: string }>({ start: "", end: "" });
   const [err, setErr] = useState("");
   const [league, setLeague] = useState("ALL");
+  const [updated, setUpdated] = useState<string | null>(null);
+  const [showAll, setShowAll] = useState(false);
 
   useEffect(() => {
     setData(null); setErr("");
-    getFixtures(scope).then((d) => { setData(d.fixtures); setLabel(d.scope); setRange({ start: d.start, end: d.end }); })
+    getFixtures(scope).then((d) => { setData(d.fixtures); setLabel(d.scope); setRange({ start: d.start, end: d.end }); setUpdated(d.updated ?? null); })
       .catch((e) => setErr(String(e)));
   }, [scope]);
 
@@ -33,7 +35,7 @@ export default function FixturesPage() {
     () => ["ALL", ...Array.from(new Set((data || []).map((f) => f.league).filter(Boolean)))],
     [data]
   );
-  const rows = (data || []).filter((f) => {
+  const base = (data || []).filter((f) => {
     if (league !== "ALL" && f.league !== league) return false;
     if (minConf && !(f.top_pick && f.top_pick.confidence >= minConf)) return false;
     if (q) {
@@ -42,6 +44,12 @@ export default function FixturesPage() {
     }
     return true;
   });
+  // hide no-stats (unenriched / no pick) by default; sort best-confidence first
+  const hasPick = (f: Fixture) => f.enriched !== false && !!f.top_pick;
+  const hiddenCount = base.filter((f) => !hasPick(f)).length;
+  const rows = (showAll ? base : base.filter(hasPick))
+    .slice()
+    .sort((a, b) => (b.top_pick?.confidence ?? -1) - (a.top_pick?.confidence ?? -1));
 
   return (
     <div>
@@ -49,8 +57,12 @@ export default function FixturesPage() {
         <div>
           <h1 className="font-mono text-2xl font-bold tracking-tight">Fixtures</h1>
           <p className="text-muted text-sm mt-1 tnum">
-            <span className="text-text">{dateLine || "…"}</span> · {label} · {rows.length} matches
+            <span className="text-text">{dateLine || "…"}</span> · {label} · {rows.length} picks
           </p>
+          <div className="mt-2 flex items-center gap-4 flex-wrap">
+            <ConfidenceLegend />
+            <Freshness iso={updated} />
+          </div>
         </div>
         <div className="flex items-center gap-2">
           <ScopeTabs value={scope} onChange={setScope} scopes={SCOPES} />
@@ -85,7 +97,7 @@ export default function FixturesPage() {
       )}
 
       {err && <Card className="p-5 text-bad text-sm">API error: {err}. Is the backend running on :8000?</Card>}
-      {!data && !err && <Spinner label="Loading fixtures…" />}
+      {!data && !err && <LoadingState rows={8} />}
 
       <div className="grid gap-2.5">
         {rows.map((f, i) => (
@@ -127,6 +139,17 @@ export default function FixturesPage() {
           </Link>
         ))}
       </div>
+
+      {data && !err && hiddenCount > 0 && (
+        <button onClick={() => setShowAll((v) => !v)}
+          className="mt-4 w-full rounded-lg border border-border bg-surface/60 py-2.5 text-sm text-muted hover:text-text hover:border-primary/40 transition-colors tnum">
+          {showAll ? "hide no-stats matches" : `show all (${hiddenCount} no-stats)`}
+        </button>
+      )}
+
+      {data && !err && rows.length === 0 && (
+        <Card className="p-8 text-center text-muted text-sm">No matches with stats for this scope yet.</Card>
+      )}
     </div>
   );
 }

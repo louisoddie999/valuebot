@@ -171,6 +171,36 @@ def build_slip(legs: list[dict], min_legs: int, max_legs: int,
     }
 
 
+def build_slip_chunks(legs: list[dict], min_legs: int, leg_min: float, leg_max: float,
+                      chunk_size: int, max_chunks: int | None = None) -> list[dict]:
+    """
+    Split the confidence-ranked, in-band, one-per-event pool into consecutive disjoint
+    slips of up to chunk_size legs each. Powers numbered sub-slips (LONGSHOT 1 / 2 / ...) and
+    multiple SAFE / MID tickets so a 60-leg pool becomes several individually-bookable slips
+    (SportyBet betslip holds 50 selections; oversized single slips can't load).
+    """
+    pool = [l for l in legs if leg_min <= l["odds"] <= leg_max]
+    pool.sort(key=lambda l: -l["prob"])
+    seen, uniq = set(), []
+    for l in pool:
+        if l["event_id"] in seen:
+            continue
+        seen.add(l["event_id"]); uniq.append(l)
+
+    chunks = []
+    for i in range(0, len(uniq), chunk_size):
+        grp = uniq[i:i + chunk_size]
+        if len(grp) < min_legs:
+            break
+        co, cp = 1.0, 1.0
+        for l in grp:
+            co *= l["odds"]; cp *= l["prob"]
+        chunks.append({"combined_odds": round(co, 2), "combined_prob": round(cp, 8), "legs": grp})
+        if max_chunks and len(chunks) >= max_chunks:
+            break
+    return chunks
+
+
 def run(scope: str | None = None):
     cfg = load_config()
     acc = cfg["accumulators"]
