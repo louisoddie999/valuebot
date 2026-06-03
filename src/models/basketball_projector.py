@@ -46,6 +46,29 @@ def project(home, away):
             "pts_home": round(pts_home, 2), "pts_away": round(pts_away, 2), "poss": round(poss, 1)}
 
 
+def project_from_scores(home, away):
+    """
+    Primary path — uses only final scores (always available from Sofascore).
+    home/away: {pts_for, pts_against, n} = last-N averages. Opponent-adjusted blend.
+      home_exp = mean(home offense, away defense) + home edge
+      away_exp = mean(away offense, home defense)
+    Optional keys: rest_adj (pts), form (unused here, applied upstream).
+    """
+    try:
+        ho, hd = float(home["pts_for"]), float(home["pts_against"])
+        ao, ad = float(away["pts_for"]), float(away["pts_against"])
+    except (KeyError, TypeError, ValueError):
+        return None
+    # mean-revert each toward league average scoring to guard small samples
+    ho, hd = _revert(ho, LG_ORTG), _revert(hd, LG_ORTG)
+    ao, ad = _revert(ao, LG_ORTG), _revert(ad, LG_ORTG)
+    pts_home = (ho + ad) / 2.0 + HOME_PTS + float(home.get("rest_adj", 0.0))
+    pts_away = (ao + hd) / 2.0 + float(away.get("rest_adj", 0.0))
+    return {"exp_total": round(pts_home + pts_away, 2), "exp_margin": round(pts_home - pts_away, 2),
+            "pts_home": round(pts_home, 2), "pts_away": round(pts_away, 2),
+            "poss": round((ho + hd + ao + ad) / 4.0, 1)}
+
+
 def _scale(period, table, full=1.0):
     return table.get(period, 1.0) if period != "FULL" else full
 
