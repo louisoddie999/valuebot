@@ -10,8 +10,10 @@ function Stop-All {
   Write-Host "`nShutting down ValueBot..." -ForegroundColor Yellow
   Get-Job | Stop-Job -EA SilentlyContinue; Get-Job | Remove-Job -Force -EA SilentlyContinue
   Get-Process cloudflared,ngrok -EA SilentlyContinue | Stop-Process -Force -EA SilentlyContinue
-  Get-NetTCPConnection -LocalPort $PORT -State Listen -EA SilentlyContinue |
-    Select-Object -Expand OwningProcess -Unique | ForEach-Object { Stop-Process -Id $_ -Force -EA SilentlyContinue }
+  foreach ($pp in @($PORT, 3000)) {
+    Get-NetTCPConnection -LocalPort $pp -State Listen -EA SilentlyContinue |
+      Select-Object -Expand OwningProcess -Unique | ForEach-Object { Stop-Process -Id $_ -Force -EA SilentlyContinue }
+  }
 }
 function Invoke-Refresh([string]$why) {
   Write-Host "`n[$(Get-Date -Format HH:mm)] Refreshing ($why): scope=$Scope ..." -ForegroundColor Cyan
@@ -28,6 +30,13 @@ try {
   $api = Start-Process -PassThru -WindowStyle Minimized python -ArgumentList '-m','uvicorn','api.main:app','--host','127.0.0.1','--port',"$PORT"
   Start-Sleep 5
   try { $null = Invoke-RestMethod "http://127.0.0.1:$PORT/api/health" -TimeoutSec 10; Write-Host "API healthy." -ForegroundColor Green } catch { Write-Host "WARN: API slow." -ForegroundColor Yellow }
+  # local dashboard UI (Next dev) on :3000, pointed at the local API
+  Write-Host "==> Starting dashboard UI on http://localhost:3000" -ForegroundColor Cyan
+  "NEXT_PUBLIC_API_BASE=http://127.0.0.1:$PORT" | Set-Content (Join-Path $proj 'dashboard\.env.local') -NoNewline
+  Start-Process -WindowStyle Minimized -WorkingDirectory (Join-Path $proj 'dashboard') cmd.exe -ArgumentList '/c','npm run dev'
+  Start-Sleep 8
+  Start-Process "http://localhost:3000"   # open it in the default browser
+
   $publicUrl = $null
   if ($env:NGROK_DOMAIN -and (Get-Command ngrok -EA SilentlyContinue)) {
     $publicUrl = "https://$($env:NGROK_DOMAIN)"
@@ -50,7 +59,8 @@ try {
     Write-Host " PUBLIC API URL:  $publicUrl" -ForegroundColor Green
     Write-Host "=====================================================" -ForegroundColor Green
   }
-  Write-Host "`nValueBot LIVE. Auto-refresh every ${RefreshHours}h. Ctrl+C to stop." -ForegroundColor Cyan
+  Write-Host "`n  DASHBOARD:  http://localhost:3000" -ForegroundColor Green
+  Write-Host "ValueBot LIVE (API + dashboard + tunnel). Auto-refresh every ${RefreshHours}h. Ctrl+C to stop." -ForegroundColor Cyan
   $next = (Get-Date).AddHours($RefreshHours)
   while ($true) { Start-Sleep -Seconds 60; if ((Get-Date) -ge $next) { Invoke-Refresh "scheduled"; $next = (Get-Date).AddHours($RefreshHours) } }
 }
