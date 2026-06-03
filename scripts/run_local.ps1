@@ -54,7 +54,7 @@ try {
     for ($i=0; $i -lt 30 -and -not $publicUrl; $i++) {
       Start-Sleep -Seconds 1; Write-Host "." -NoNewline
       if (Test-Path $log) {
-        $m = Select-String -Path $log -Pattern 'https://[a-z0-9-]+\.trycloudflare\.com' -ErrorAction SilentlyContinue | Select-Object -First 1
+        $m = Select-String -Path $log -Pattern 'https://[a-z0-9]+(-[a-z0-9]+)+\.trycloudflare\.com' -ErrorAction SilentlyContinue | Select-Object -First 1
         if ($m) { $publicUrl = $m.Matches[0].Value }
       }
     }

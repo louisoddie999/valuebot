@@ -41,7 +41,7 @@ try {
     Start-Process -WindowStyle Minimized -RedirectStandardError $tlog $cf -ArgumentList 'tunnel','--url',"http://127.0.0.1:$PORT"
     Write-Host "==> Tunnel Cloudflare quick (URL rotates). Waiting..." -NoNewline
     for ($i=0; $i -lt 30 -and -not $publicUrl; $i++){ Start-Sleep 1; Write-Host "." -NoNewline
-      if (Test-Path $tlog){ $m=Select-String -Path $tlog -Pattern 'https://[a-z0-9-]+\.trycloudflare\.com' -EA SilentlyContinue | Select-Object -First 1; if($m){$publicUrl=$m.Matches[0].Value} } }
+      if (Test-Path $tlog){ $m=Select-String -Path $tlog -Pattern 'https://[a-z0-9]+(-[a-z0-9]+)+\.trycloudflare\.com' -EA SilentlyContinue | Select-Object -First 1; if($m){$publicUrl=$m.Matches[0].Value} } }
     Write-Host ""
   }
   if ($publicUrl) {
