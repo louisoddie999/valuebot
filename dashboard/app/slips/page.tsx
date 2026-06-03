@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { Layers } from "lucide-react";
-import { getSlips, createBooking, fmtKick, Slips, Slip, SCOPES } from "@/lib/api";
+import { getSlips, createBooking, fmtKick, Slips, Slip, SCOPES, SPORTS } from "@/lib/api";
 import { Card, ConfChip, Odds, Spinner, ScopeTabs } from "@/components/ui";
 import { Ticket, ExternalLink, Copy, Check, Share2 } from "lucide-react";
 import { BuildChat } from "@/components/buildchat";
@@ -15,6 +15,7 @@ const TIER_DESC: Record<string, string> = {
 export default function SlipsPage() {
   const [scope, setScope] = useState("today");
   const [tier, setTier] = useState("SAFE");
+  const [sport, setSport] = useState("football");
   const [sub, setSub] = useState(0);
   const [data, setData] = useState<Slips | null>(null);
   const [err, setErr] = useState("");
@@ -25,8 +26,8 @@ export default function SlipsPage() {
 
   useEffect(() => {
     setData(null); setErr("");
-    getSlips(scope).then(setData).catch((e) => setErr(String(e)));
-  }, [scope]);
+    getSlips(scope, sport).then(setData).catch((e) => setErr(String(e)));
+  }, [scope, sport]);
 
   useEffect(() => { setSub(0); }, [tier, scope]);
   useEffect(() => { setBooking(null); setBookErr(""); setCopied(false); }, [scope, tier, sub]);
@@ -64,7 +65,15 @@ export default function SlipsPage() {
           <p className="text-muted text-sm mt-1 tnum">{data ? `${data.leg_pool} qualifying predictions` : "…"}</p>
         </div>
         <div className="flex items-center gap-2">
-          <ScopeTabs value={scope} onChange={setScope} scopes={SCOPES} />
+          <div className="inline-flex rounded-lg border border-border bg-surface p-1">
+          {SPORTS.map((sp) => (
+            <button key={sp} onClick={() => setSport(sp)}
+              className={`rounded-md px-3 py-1.5 text-sm font-medium capitalize transition-colors ${sport === sp ? "bg-primaryDeep text-white" : "text-muted hover:text-text"}`}>
+              {sp === "football" ? "⚽" : "🏀"}
+            </button>
+          ))}
+        </div>
+        <ScopeTabs value={scope} onChange={setScope} scopes={SCOPES} />
           <input type="date" value={/^\d{4}-\d{2}-\d{2}$/.test(scope) ? scope : ""}
             onChange={(e) => e.target.value && setScope(e.target.value)}
             aria-label="Pick a date"

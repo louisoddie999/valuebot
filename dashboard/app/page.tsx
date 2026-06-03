@@ -2,7 +2,7 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { ChevronRight, Filter } from "lucide-react";
-import { getFixtures, Fixture, SCOPES } from "@/lib/api";
+import { getFixtures, Fixture, SCOPES, SPORTS } from "@/lib/api";
 import { Card, ConfChip, Odds, ScopeTabs, LoadingState, ConfidenceLegend, Freshness } from "@/components/ui";
 import { AddButton } from "@/components/betslip";
 
@@ -15,12 +15,13 @@ export default function FixturesPage() {
   const [league, setLeague] = useState("ALL");
   const [updated, setUpdated] = useState<string | null>(null);
   const [showAll, setShowAll] = useState(false);
+  const [sport, setSport] = useState("football");
 
   useEffect(() => {
     setData(null); setErr("");
-    getFixtures(scope).then((d) => { setData(d.fixtures); setLabel(d.scope); setRange({ start: d.start, end: d.end }); setUpdated(d.updated ?? null); })
+    getFixtures(scope, sport).then((d) => { setData(d.fixtures); setLabel(d.scope); setRange({ start: d.start, end: d.end }); setUpdated(d.updated ?? null); })
       .catch((e) => setErr(String(e)));
-  }, [scope]);
+  }, [scope, sport]);
 
   const dateLine = range.start
     ? (range.start === range.end
@@ -65,6 +66,14 @@ export default function FixturesPage() {
           </div>
         </div>
         <div className="flex items-center gap-2">
+          <div className="inline-flex rounded-lg border border-border bg-surface p-1">
+            {SPORTS.map((sp) => (
+              <button key={sp} onClick={() => setSport(sp)}
+                className={`rounded-md px-3 py-1.5 text-sm font-medium capitalize transition-colors ${sport === sp ? "bg-primaryDeep text-white" : "text-muted hover:text-text"}`}>
+                {sp === "football" ? "⚽ Football" : "🏀 Basketball"}
+              </button>
+            ))}
+          </div>
           <ScopeTabs value={scope} onChange={setScope} scopes={SCOPES} />
           <input type="date" value={scope.match(/^\d{4}-\d{2}-\d{2}$/) ? scope : ""}
             onChange={(e) => e.target.value && setScope(e.target.value)}

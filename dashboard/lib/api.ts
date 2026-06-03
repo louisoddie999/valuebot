@@ -37,12 +37,12 @@ async function get<T>(path: string): Promise<T> {
   return r.json();
 }
 
-export const getFixtures = (scope: string) =>
-  get<{ scope: string; start: string; end: string; count: number; updated?: string | null; fixtures: Fixture[] }>(`/api/fixtures?scope=${encodeURIComponent(scope)}`);
+export const getFixtures = (scope: string, sport = "football") =>
+  get<{ scope: string; start: string; end: string; count: number; updated?: string | null; fixtures: Fixture[] }>(`/api/fixtures?scope=${encodeURIComponent(scope)}&sport=${sport}`);
 // normalize: decode first (param may arrive already-encoded) then encode once → never double-encode
 const enc1 = (id: string) => { try { return encodeURIComponent(decodeURIComponent(id)); } catch { return encodeURIComponent(id); } };
 export const getMatch = (id: string) => get<MatchDetail>(`/api/match/${enc1(id)}`);
-export const getSlips = (scope: string) => get<Slips>(`/api/slips?scope=${encodeURIComponent(scope)}`);
+export const getSlips = (scope: string, sport = "football") => get<Slips>(`/api/slips?scope=${encodeURIComponent(scope)}&sport=${sport}`);
 export const getAccuracy = () => get<any>(`/api/accuracy`);
 export const getResults = () => get<any>(`/api/results`);
 
@@ -63,3 +63,4 @@ export async function chatBuild(message: string): Promise<ChatResp> {
 }
 
 export const SCOPES = ["today", "tomorrow", "weekend", "week", "ahead"];
+export const SPORTS = ["football", "basketball"];
