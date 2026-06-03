@@ -119,7 +119,7 @@ def load_model_legs(min_odds: float, max_odds: float, min_conf: float,
                  AND substr(e.kickoff_ts, 1, 10) BETWEEN ? AND ?""",
             (min_odds, max_odds, start_date, end_date),
         ).fetchall()
-        cal = calibration.load_curve(conn)   # learned correction (identity until enough settled picks)
+        cal = calibration.load_curve(conn, "football")   # per-sport learned correction
 
     legs = []
     for r in odds_rows:
@@ -161,7 +161,7 @@ def load_basketball_legs(min_conf: float, start_date: str, end_date: str) -> lis
                WHERE e.sport='Basketball' AND o.odds >= 1.20 AND o.odds <= 1.90
                  AND substr(e.kickoff_ts,1,10) BETWEEN ? AND ?""",
             (start_date, end_date)).fetchall()
-        cal = calibration.load_curve(conn)
+        cal = calibration.load_curve(conn, "basketball")
 
     legs = []
     for r in odds_rows:

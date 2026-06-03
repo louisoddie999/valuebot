@@ -391,11 +391,14 @@ def accuracy():
     from src.models import calibration as _cal
     try:
         with _connect() as _conn:
-            live = _cal.summary(_conn)
+            live = _cal.summary(_conn, "football")
+            live_bball = _cal.summary(_conn, "basketball")
     except Exception:
         live = {"active": False, "n_total": 0}
+        live_bball = {"active": False, "n_total": 0}
     return {
         "live_calibration": live,
+        "live_calibration_basketball": live_bball,
         "validated_matches": 8263,
         "calibration": [
             {"bucket": "50-60%", "predicted": 55, "actual": 54.1, "n": 14602},

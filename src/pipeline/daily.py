@@ -68,10 +68,11 @@ def run(scope: str, board_cap: int, enrich_cap: int, bball: bool = True):
         _log("Step 3/3: settling results + recalibrating model ...", lines)
         s = settle.run()
         cal = calibration.recalibrate()
-        if cal.get("active"):
-            _log(f"  settled {s.get('settled', 0)} | calibration ACTIVE on {cal['n_total']} settled picks", lines)
-        else:
-            _log(f"  settled {s.get('settled', 0)} | calibration LEARNING — need {cal.get('need', '?')} more settled picks", lines)
+        bits = []
+        for sp, v in cal.items():
+            bits.append(f"{sp}: {'ACTIVE' if v['active'] else 'learning'} ({v['n_total']} settled"
+                        + ("" if v['active'] else f", need {v['need']}") + ")")
+        _log(f"  settled {s.get('settled', 0)} | calibration -> " + " | ".join(bits), lines)
     except Exception as e:
         _log(f"  ! settle/recalibrate failed: {e}", lines)
 
