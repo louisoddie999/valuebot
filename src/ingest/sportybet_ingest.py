@@ -29,9 +29,14 @@ HEADERS = {
 REQUEST_DELAY = 0.4
 
 
+import os as _os
+_PROXY = _os.getenv("SCRAPER_PROXY") or None
+_PROXIES = {"http": _PROXY, "https": _PROXY} if _PROXY else None
+
+
 def _get(url: str) -> dict | None:
     try:
-        r = requests.get(url, headers=HEADERS, timeout=25)
+        r = requests.get(url, headers=HEADERS, timeout=25, proxies=_PROXIES)
         r.raise_for_status()
         j = r.json()
         if j.get("bizCode") != 10000:

@@ -1,0 +1,30 @@
+# ValueBot 24/7 — VPS deploy. `docker compose up -d` and it runs forever.
+services:
+  valuebot:
+    build: .
+    restart: unless-stopped
+    environment:
+      - GOOGLE_AI_API_KEY=${GOOGLE_AI_API_KEY}
+      - GEMINI_MODEL=${GEMINI_MODEL:-gemini-2.5-flash}
+      - SCRAPER_PROXY=${SCRAPER_PROXY}        # residential/NG proxy for Sofascore + SportyBet
+      - SCOPE=${SCOPE:-week}
+      - REFRESH_HOURS=${REFRESH_HOURS:-6}
+      - DB_PATH=data/serve.sqlite
+    volumes:
+      - ./data:/app/data                       # persist DB (enrichment grows it) across restarts
+    expose:
+      - "8000"
+    ports:
+      - "8000:8000"                            # remove if Caddy fronts it
+
+  # Optional: auto-HTTPS reverse proxy (needs a domain pointed at the VPS).
+  # Vercel (https) -> VPS must be https, so use this OR a Cloudflare Tunnel.
+  caddy:
+    image: caddy:2
+    restart: unless-stopped
+    depends_on: [valuebot]
+    ports: ["80:80", "443:443"]
+    environment:
+      - DOMAIN=${DOMAIN}
+    command: caddy reverse-proxy --from ${DOMAIN} --to valuebot:8000
+    profiles: ["tls"]                          # only starts with: docker compose --profile tls up -d

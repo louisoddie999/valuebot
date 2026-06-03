@@ -33,11 +33,17 @@ REQUEST_DELAY = 0.7                   # politer pacing to avoid Cloudflare bot b
 _STAT_CACHE: dict[int, dict] = {}    # event_id -> {home_corners, away_corners, home_id}
 
 
+import os as _os
+_PROXY = _os.getenv("SCRAPER_PROXY") or None
+_PROXIES = {"http": _PROXY, "https": _PROXY} if _PROXY else None
+
+
 def _get(path: str, retries: int = 4) -> dict | None:
-    """GET with backoff on 403/429 (Cloudflare rate-limit). Returns None on hard fail."""
+    """GET with backoff on 403/429 (Cloudflare rate-limit). Returns None on hard fail.
+    Routes through SCRAPER_PROXY (residential) when set; direct otherwise."""
     for i in range(retries):
         try:
-            r = cr.get(API + path, impersonate="chrome", timeout=20)
+            r = cr.get(API + path, impersonate="chrome", timeout=20, proxies=_PROXIES)
         except Exception:
             time.sleep(2 * (i + 1))
             continue

@@ -1,0 +1,10 @@
+.git
+dashboard
+node_modules
+**/__pycache__
+*.exe
+cloudflared.exe
+reports
+data/soccer_value.sqlite
+.env
+*.bak

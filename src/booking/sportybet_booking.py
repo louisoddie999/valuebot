@@ -52,9 +52,14 @@ def create_booking_code(legs: list[dict]) -> dict:
     if not legs:
         return {"ok": False, "error": "no legs"}
     selections = [to_selection(l) for l in legs]
+    import os as _os
+    _proxy = _os.getenv("SCRAPER_PROXY") or None
+    _kw = dict(_IMPERSONATE)
+    if _proxy:
+        _kw["proxies"] = {"http": _proxy, "https": _proxy}
     try:
         r = _http.post(SHARE_URL, headers=HEADERS, json={"selections": selections},
-                       timeout=30, **_IMPERSONATE)
+                       timeout=30, **_kw)
     except Exception as e:
         return {"ok": False, "error": f"network: {e}"}
     body = (r.text or "").strip()
