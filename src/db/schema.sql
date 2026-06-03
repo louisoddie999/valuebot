@@ -168,6 +168,15 @@ CREATE TABLE IF NOT EXISTS tracked_picks (
 CREATE INDEX IF NOT EXISTS idx_tp_status ON tracked_picks(status);
 CREATE INDEX IF NOT EXISTS idx_tp_event ON tracked_picks(sb_event_id);
 
+-- self-recalibration: predicted-vs-actual curve learned from settled picks
+CREATE TABLE IF NOT EXISTS calibration_curve (
+    lo REAL, hi REAL, mid REAL, n INTEGER, actual REAL, offset REAL, updated_at TEXT
+);
+CREATE TABLE IF NOT EXISTS calibration_meta (
+    id INTEGER PRIMARY KEY CHECK (id = 1),
+    n_total INTEGER DEFAULT 0, active INTEGER DEFAULT 0, updated_at TEXT
+);
+
 CREATE INDEX IF NOT EXISTS idx_matches_date ON matches(date);
 CREATE INDEX IF NOT EXISTS idx_matches_league_season ON matches(league, season);
 CREATE INDEX IF NOT EXISTS idx_odds_match ON odds(match_id);

@@ -21,6 +21,8 @@ from datetime import datetime, timezone
 
 from src.db.db import connect, PROJECT_ROOT
 from src.ingest import sportybet_ingest, sofascore
+from src.results import settle
+from src.models import calibration
 from src.punter.accumulator_builder import parse_scope
 
 
@@ -45,10 +47,22 @@ def run(scope: str, board_cap: int, enrich_cap: int):
 
     # 2. Sofascore enrichment for scope
     try:
-        _log("Step 2/2: enriching fixtures in scope via Sofascore ...", lines)
+        _log("Step 2/3: enriching fixtures in scope via Sofascore ...", lines)
         sofascore.run_scope(start_d, end_d, enrich_cap)
     except Exception as e:
         _log(f"  ! enrichment failed: {e}", lines)
+
+    # 3. settle finished picks + self-recalibrate the confidence model
+    try:
+        _log("Step 3/3: settling results + recalibrating model ...", lines)
+        s = settle.run()
+        cal = calibration.recalibrate()
+        if cal.get("active"):
+            _log(f"  settled {s.get('settled', 0)} | calibration ACTIVE on {cal['n_total']} settled picks", lines)
+        else:
+            _log(f"  settled {s.get('settled', 0)} | calibration LEARNING — need {cal.get('need', '?')} more settled picks", lines)
+    except Exception as e:
+        _log(f"  ! settle/recalibrate failed: {e}", lines)
 
     # summary
     with connect() as c:

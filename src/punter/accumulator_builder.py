@@ -18,7 +18,7 @@ from datetime import datetime, timezone, date, timedelta
 from pathlib import Path
 
 from src.db.db import connect, load_config, PROJECT_ROOT
-from src.models import projector
+from src.models import projector, calibration
 
 
 # ---------------- date scope ----------------
@@ -119,6 +119,7 @@ def load_model_legs(min_odds: float, max_odds: float, min_conf: float,
                  AND substr(e.kickoff_ts, 1, 10) BETWEEN ? AND ?""",
             (min_odds, max_odds, start_date, end_date),
         ).fetchall()
+        cal = calibration.load_curve(conn)   # learned correction (identity until enough settled picks)
 
     legs = []
     for r in odds_rows:
@@ -127,7 +128,10 @@ def load_model_legs(min_odds: float, max_odds: float, min_conf: float,
             continue
         f["_market_name"] = r["market_name"]   # for card-market detection
         mp = projector.model_prob_for(f, r["market_id"], r["specifier"], r["outcome_desc"])
-        if mp is None or mp < min_conf:
+        if mp is None:
+            continue
+        mp = calibration.apply(mp, cal)   # self-recalibration: correct toward real hit-rate
+        if mp < min_conf:
             continue
         legs.append({
             "event_id": r["event_id"],

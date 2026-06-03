@@ -376,7 +376,15 @@ def chat(req: ChatReq):
 @app.get("/api/accuracy")
 def accuracy():
     # validated on 8,263 top-5 matches (walk-forward, no leakage)
+    from src.db.db import connect as _connect
+    from src.models import calibration as _cal
+    try:
+        with _connect() as _conn:
+            live = _cal.summary(_conn)
+    except Exception:
+        live = {"active": False, "n_total": 0}
     return {
+        "live_calibration": live,
         "validated_matches": 8263,
         "calibration": [
             {"bucket": "50-60%", "predicted": 55, "actual": 54.1, "n": 14602},
