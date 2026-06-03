@@ -1,0 +1,21 @@
+# secrets
+.env
+*.key
+
+# data / build
+data/*.sqlite
+!data/serve.sqlite          # ship the SLIM serve DB to Render (12 MB, GitHub-safe)
+reports/
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# dashboard
+dashboard/node_modules/
+dashboard/.next/
+dashboard/.env.local
+
+# binaries
+cloudflared.exe
+*.exe

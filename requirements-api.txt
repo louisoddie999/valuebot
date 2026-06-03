@@ -1,0 +1,11 @@
+# Lean deps for the Render-hosted API (no playwright, no ML training libs)
+fastapi>=0.110
+uvicorn[standard]>=0.27
+pydantic>=2.6
+pyyaml>=6.0
+python-dotenv>=1.0
+requests>=2.31
+numpy>=1.26
+scipy>=1.12
+google-genai>=1.0
+curl_cffi>=0.7

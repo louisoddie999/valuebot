@@ -1,0 +1,49 @@
+# SOCCER-VALUE-BOT configuration
+
+paths:
+  db: data/soccer_value.sqlite
+  raw_cache: data/raw
+  reports: reports
+
+# football-data.co.uk league codes -> our canonical league name
+leagues:
+  E0: Premier League
+  SP1: La Liga
+  I1: Serie A
+  D1: Bundesliga
+  F1: Ligue 1
+
+# Seasons to ingest (football-data.co.uk code = last2yy+next2yy, e.g. 2324 = 2023/24)
+seasons:
+  - "2122"
+  - "2223"
+  - "2324"
+  - "2425"
+  - "2526"
+
+football_data:
+  base_url: https://www.football-data.co.uk/mmz4281
+  request_delay_sec: 1.0
+
+# Value/staking params (used later phases — placed here now for single source of truth)
+value:
+  ev_threshold: 0.03        # +3% minimum edge to flag
+  kelly_multiplier: 0.25    # quarter-Kelly
+  max_stake_pct: 0.02       # cap any single stake at 2% bankroll
+  devig_method: proportional
+
+bankroll:
+  units: 1000               # placeholder — owner sets real value
+
+# Accumulator builder tiers (target combined odds range)
+accumulators:
+  prob_source: model        # confidence-based predictions from stats (validated, calibrated)
+  min_confidence: 0.65      # only predict picks the data backs at >= 65% (proven ~62-74% real)
+  min_leg_odds: 1.20        # no junk near-certain legs (>= 1.20)
+  max_leg_odds: 2.20
+  # Tiers defined by LEG COUNT (combined odds emerge from stacking modest legs).
+  # Legs ranked by stat confidence (edge) — strongest predictions first. One leg per match.
+  tiers:
+    SAFE:     {min_legs: 3,  max_legs: 5,    leg_min: 1.20, leg_max: 1.60}
+    MID:      {min_legs: 6,  max_legs: 12,   leg_min: 1.20, leg_max: 1.90}
+    LONGSHOT: {min_legs: 15, max_legs: null, leg_min: 1.20, leg_max: 1.90}  # null = uncapped

@@ -1,0 +1,1690 @@
+{
+  "X": {
+    "market_id": "1",
+    "example_name": "1X2",
+    "outcome_count": 3,
+    "outcomes_example": [
+      "Home",
+      "Draw",
+      "Away"
+    ],
+    "category": "Other"
+  },
+  "X - UP": {
+    "market_id": "60200",
+    "example_name": "1X2 - 1UP",
+    "outcome_count": 3,
+    "outcomes_example": [
+      "Home",
+      "Draw",
+      "Away"
+    ],
+    "category": "Other"
+  },
+  "Over/Under": {
+    "market_id": "18",
+    "example_name": "Over/Under",
+    "outcome_count": 2,
+    "outcomes_example": [
+      "Over 1",
+      "Under 1"
+    ],
+    "category": "Goals"
+  },
+  "Over/Under - Early Goals": {
+    "market_id": "60180",
+    "example_name": "Over/Under - Early Goals",
+    "outcome_count": 2,
+    "outcomes_example": [
+      "Over 1.5",
+      "Under 1.5"
+    ],
+    "category": "Goals"
+  },
+  "Double Chance": {
+    "market_id": "10",
+    "example_name": "Double Chance",
+    "outcome_count": 3,
+    "outcomes_example": [
+      "Home or Draw",
+      "Home or Away",
+      "Draw or Away"
+    ],
+    "category": "Result"
+  },
+  "Double Chance - UP": {
+    "market_id": "60110",
+    "example_name": "Double Chance - 1UP",
+    "outcome_count": 3,
+    "outcomes_example": [
+      "Home or Draw",
+      "Home or Away",
+      "Draw or Away"
+    ],
+    "category": "Result"
+  },
+  "Next Goal": {
+    "market_id": "8",
+    "example_name": "Next Goal",
+    "outcome_count": 3,
+    "outcomes_example": [
+      "Home",
+      "None",
+      "Away"
+    ],
+    "category": "Result"
+  },
+  "Handicap": {
+    "market_id": "14",
+    "example_name": "Handicap",
+    "outcome_count": 3,
+    "outcomes_example": [
+      "Home (0:1)",
+      "Draw (0:1)",
+      "Away (0:1)"
+    ],
+    "category": "Handicap"
+  },
+  "Home O/U": {
+    "market_id": "19",
+    "example_name": "Home O/U",
+    "outcome_count": 2,
+    "outcomes_example": [
+      "Over 0.5",
+      "Under 0.5"
+    ],
+    "category": "Goals"
+  },
+  "Away O/U": {
+    "market_id": "20",
+    "example_name": "Away O/U",
+    "outcome_count": 2,
+    "outcomes_example": [
+      "Over 0.5",
+      "Under 0.5"
+    ],
+    "category": "Goals"
+  },
+  "GG/NG": {
+    "market_id": "29",
+    "example_name": "GG/NG",
+    "outcome_count": 2,
+    "outcomes_example": [
+      "Yes",
+      "No"
+    ],
+    "category": "Goals"
+  },
+  "GG/NG +": {
+    "market_id": "60000",
+    "example_name": "GG/NG 2+",
+    "outcome_count": 2,
+    "outcomes_example": [
+      "Yes",
+      "No"
+    ],
+    "category": "Goals"
+  },
+  "(id 60010)": {
+    "market_id": "60010",
+    "example_name": "",
+    "outcome_count": 2,
+    "outcomes_example": [
+      "Yes",
+      "No"
+    ],
+    "category": "Other"
+  },
+  "(id 60020)": {
+    "market_id": "60020",
+    "example_name": "",
+    "outcome_count": 2,
+    "outcomes_example": [
+      "Yes",
+      "No"
+    ],
+    "category": "Other"
+  },
+  "(id 60011)": {
+    "market_id": "60011",
+    "example_name": "",
+    "outcome_count": 2,
+    "outcomes_example": [
+      "Yes",
+      "No"
+    ],
+    "category": "Other"
+  },
+  "(id 60021)": {
+    "market_id": "60021",
+    "example_name": "",
+    "outcome_count": 2,
+    "outcomes_example": [
+      "Yes",
+      "No"
+    ],
+    "category": "Other"
+  },
+  "(id 60012)": {
+    "market_id": "60012",
+    "example_name": "",
+    "outcome_count": 2,
+    "outcomes_example": [
+      "Yes",
+      "No"
+    ],
+    "category": "Other"
+  },
+  "(id 60022)": {
+    "market_id": "60022",
+    "example_name": "",
+    "outcome_count": 2,
+    "outcomes_example": [
+      "Yes",
+      "No"
+    ],
+    "category": "Other"
+  },
+  "Any Team to lead by  Goal": {
+    "market_id": "60300",
+    "example_name": "Any Team to lead by 1 Goal",
+    "outcome_count": 2,
+    "outcomes_example": [
+      "Yes",
+      "No"
+    ],
+    "category": "Goals"
+  },
+  "Any Team to lead by  Goals": {
+    "market_id": "60301",
+    "example_name": "Any Team to lead by 2 Goals",
+    "outcome_count": 2,
+    "outcomes_example": [
+      "Yes",
+      "No"
+    ],
+    "category": "Goals"
+  },
+  "Home Team to lead by  Goal": {
+    "market_id": "60303",
+    "example_name": "Home Team to lead by 1 Goal",
+    "outcome_count": 2,
+    "outcomes_example": [
+      "Yes",
+      "No"
+    ],
+    "category": "Goals"
+  },
+  "Home Team to lead by  Goals": {
+    "market_id": "60304",
+    "example_name": "Home Team to lead by 2 Goals",
+    "outcome_count": 2,
+    "outcomes_example": [
+      "Yes",
+      "No"
+    ],
+    "category": "Goals"
+  },
+  "Away Team to lead by  Goal": {
+    "market_id": "60306",
+    "example_name": "Away Team to lead by 1 Goal",
+    "outcome_count": 2,
+    "outcomes_example": [
+      "Yes",
+      "No"
+    ],
+    "category": "Goals"
+  },
+  "Away Team to lead by  Goals": {
+    "market_id": "60307",
+    "example_name": "Away Team to lead by 2 Goals",
+    "outcome_count": 2,
+    "outcomes_example": [
+      "Yes",
+      "No"
+    ],
+    "category": "Goals"
+  },
+  "Goal Bounds": {
+    "market_id": "450001",
+    "example_name": "Goal Bounds",
+    "outcome_count": 20,
+    "outcomes_example": [
+      "0",
+      "0-1",
+      "0-2",
+      "0-3"
+    ],
+    "category": "Goals"
+  },
+  "Goal Bounds - Home": {
+    "market_id": "450002",
+    "example_name": "Goal Bounds - Home",
+    "outcome_count": 9,
+    "outcomes_example": [
+      "0",
+      "0-1",
+      "0-2",
+      "1"
+    ],
+    "category": "Goals"
+  },
+  "Goal Bounds - Away": {
+    "market_id": "450003",
+    "example_name": "Goal Bounds - Away",
+    "outcome_count": 9,
+    "outcomes_example": [
+      "0",
+      "0-1",
+      "0-2",
+      "1"
+    ],
+    "category": "Goals"
+  },
+  "Excluded Goals": {
+    "market_id": "450004",
+    "example_name": "Excluded Goals",
+    "outcome_count": 6,
+    "outcomes_example": [
+      "0",
+      "1",
+      "2",
+      "3"
+    ],
+    "category": "Goals"
+  },
+  "Excluded Goals - Home": {
+    "market_id": "450005",
+    "example_name": "Excluded Goals - Home",
+    "outcome_count": 4,
+    "outcomes_example": [
+      "0",
+      "1",
+      "2",
+      "3+"
+    ],
+    "category": "Goals"
+  },
+  "Excluded Goals - Away": {
+    "market_id": "450006",
+    "example_name": "Excluded Goals - Away",
+    "outcome_count": 4,
+    "outcomes_example": [
+      "0",
+      "1",
+      "2",
+      "3+"
+    ],
+    "category": "Goals"
+  },
+  "Draw No Bet": {
+    "market_id": "11",
+    "example_name": "Draw No Bet",
+    "outcome_count": 2,
+    "outcomes_example": [
+      "Home",
+      "Away"
+    ],
+    "category": "Result"
+  },
+  "Correct Score": {
+    "market_id": "45",
+    "example_name": "Correct Score",
+    "outcome_count": 26,
+    "outcomes_example": [
+      "0:0",
+      "1:0",
+      "2:0",
+      "3:0"
+    ],
+    "category": "Other"
+  },
+  "Halftime/Fulltime": {
+    "market_id": "47",
+    "example_name": "Halftime/Fulltime",
+    "outcome_count": 9,
+    "outcomes_example": [
+      "Home/Home",
+      "Home/Draw",
+      "Home/Away",
+      "Draw/Home"
+    ],
+    "category": "Halves"
+  },
+  "Halftime/fulltime correct score": {
+    "market_id": "46",
+    "example_name": "Halftime/fulltime correct score",
+    "outcome_count": 46,
+    "outcomes_example": [
+      "0:0 0:0",
+      "0:0 0:1",
+      "0:0 0:2",
+      "0:0 0:3"
+    ],
+    "category": "Halves"
+  },
+  "Both Halves Over X.": {
+    "market_id": "58",
+    "example_name": "Both Halves Over X.5",
+    "outcome_count": 2,
+    "outcomes_example": [
+      "Yes",
+      "No"
+    ],
+    "category": "Other"
+  },
+  "Both Halves Under X.": {
+    "market_id": "59",
+    "example_name": "Both Halves Under X.5",
+    "outcome_count": 2,
+    "outcomes_example": [
+      "Yes",
+      "No"
+    ],
+    "category": "Other"
+  },
+  "st/nd Half GG/NG": {
+    "market_id": "55",
+    "example_name": "1st/2nd Half GG/NG",
+    "outcome_count": 4,
+    "outcomes_example": [
+      "No/No",
+      "Yes/No",
+      "Yes/Yes",
+      "No/Yes"
+    ],
+    "category": "Goals"
+  },
+  "Home To Score In Both Halves": {
+    "market_id": "56",
+    "example_name": "Home To Score In Both Halves",
+    "outcome_count": 2,
+    "outcomes_example": [
+      "Yes",
+      "No"
+    ],
+    "category": "Player"
+  },
+  "Away To Score In Both Halves": {
+    "market_id": "57",
+    "example_name": "Away To Score In Both Halves",
+    "outcome_count": 2,
+    "outcomes_example": [
+      "Yes",
+      "No"
+    ],
+    "category": "Player"
+  },
+  "Odd/Even": {
+    "market_id": "26",
+    "example_name": "Odd/Even",
+    "outcome_count": 2,
+    "outcomes_example": [
+      "Odd",
+      "Even"
+    ],
+    "category": "Goals"
+  },
+  "Home Team Odd/Even": {
+    "market_id": "27",
+    "example_name": "Home Team Odd/Even",
+    "outcome_count": 2,
+    "outcomes_example": [
+      "Odd",
+      "Even"
+    ],
+    "category": "Goals"
+  },
+  "Away Team Odd/Even": {
+    "market_id": "28",
+    "example_name": "Away Team Odd/Even",
+    "outcome_count": 2,
+    "outcomes_example": [
+      "Odd",
+      "Even"
+    ],
+    "category": "Goals"
+  },
+  "st Half - X": {
+    "market_id": "60",
+    "example_name": "1st Half - 1X2",
+    "outcome_count": 3,
+    "outcomes_example": [
+      "Home",
+      "Draw",
+      "Away"
+    ],
+    "category": "Halves"
+  },
+  "st Half - Over/Under": {
+    "market_id": "68",
+    "example_name": "1st Half - Over/Under",
+    "outcome_count": 2,
+    "outcomes_example": [
+      "Over 1",
+      "Under 1"
+    ],
+    "category": "Goals"
+  },
+  "st Half - Double Chance": {
+    "market_id": "63",
+    "example_name": "1st Half - Double Chance",
+    "outcome_count": 3,
+    "outcomes_example": [
+      "Home or Draw",
+      "Home or Away",
+      "Draw or Away"
+    ],
+    "category": "Result"
+  },
+  "st Half - Next Goal": {
+    "market_id": "62",
+    "example_name": "1st Half - Next Goal",
+    "outcome_count": 3,
+    "outcomes_example": [
+      "Home",
+      "None",
+      "Away"
+    ],
+    "category": "Result"
+  },
+  "st Half - Handicap": {
+    "market_id": "65",
+    "example_name": "1st Half - Handicap",
+    "outcome_count": 3,
+    "outcomes_example": [
+      "Home (0:1)",
+      "Draw (0:1)",
+      "Away (0:1)"
+    ],
+    "category": "Handicap"
+  },
+  "st Half - Home O/U": {
+    "market_id": "69",
+    "example_name": "1st Half - Home O/U",
+    "outcome_count": 2,
+    "outcomes_example": [
+      "Over 0.5",
+      "Under 0.5"
+    ],
+    "category": "Goals"
+  },
+  "st Half - Away O/U": {
+    "market_id": "70",
+    "example_name": "1st Half - Away O/U",
+    "outcome_count": 2,
+    "outcomes_example": [
+      "Over 0.5",
+      "Under 0.5"
+    ],
+    "category": "Goals"
+  },
+  "st Half - GG/NG": {
+    "market_id": "75",
+    "example_name": "1st Half - GG/NG",
+    "outcome_count": 2,
+    "outcomes_example": [
+      "Yes",
+      "No"
+    ],
+    "category": "Goals"
+  },
+  "st Half - Draw No Bet": {
+    "market_id": "64",
+    "example_name": "1st Half - Draw No Bet",
+    "outcome_count": 2,
+    "outcomes_example": [
+      "Home",
+      "Away"
+    ],
+    "category": "Result"
+  },
+  "Goal Bounds - st Half": {
+    "market_id": "810001",
+    "example_name": "Goal Bounds - 1st Half",
+    "outcome_count": 9,
+    "outcomes_example": [
+      "0",
+      "0-1",
+      "0-2",
+      "1"
+    ],
+    "category": "Goals"
+  },
+  "Excluded Goals - st Half": {
+    "market_id": "810002",
+    "example_name": "Excluded Goals - 1st Half",
+    "outcome_count": 4,
+    "outcomes_example": [
+      "0",
+      "1",
+      "2",
+      "3+"
+    ],
+    "category": "Goals"
+  },
+  "st Half - Correct Score": {
+    "market_id": "81",
+    "example_name": "1st Half - Correct Score",
+    "outcome_count": 10,
+    "outcomes_example": [
+      "0:0",
+      "1:1",
+      "2:2",
+      "1:0"
+    ],
+    "category": "Halves"
+  },
+  "st Half - Exact Goals": {
+    "market_id": "71",
+    "example_name": "1st Half - Exact Goals",
+    "outcome_count": 4,
+    "outcomes_example": [
+      "0",
+      "1",
+      "2",
+      "3+"
+    ],
+    "category": "Goals"
+  },
+  "st Half - Home Clean Sheet": {
+    "market_id": "76",
+    "example_name": "1st Half - Home Clean Sheet",
+    "outcome_count": 2,
+    "outcomes_example": [
+      "Yes",
+      "No"
+    ],
+    "category": "Halves"
+  },
+  "st Half - Away Clean Sheet": {
+    "market_id": "77",
+    "example_name": "1st Half - Away Clean Sheet",
+    "outcome_count": 2,
+    "outcomes_example": [
+      "Yes",
+      "No"
+    ],
+    "category": "Halves"
+  },
+  "st Half - X & GG/NG": {
+    "market_id": "78",
+    "example_name": "1st Half - 1X2 & GG/NG",
+    "outcome_count": 6,
+    "outcomes_example": [
+      "Home & yes",
+      "Home & no",
+      "Draw & yes",
+      "Draw & no"
+    ],
+    "category": "Goals"
+  },
+  "st Half - X & Total": {
+    "market_id": "79",
+    "example_name": "1st Half - 1X2 & Total",
+    "outcome_count": 6,
+    "outcomes_example": [
+      "Home & Under 1.5",
+      "Home & Over 1.5",
+      "Draw & Under 1.5",
+      "Draw & Over 1.5"
+    ],
+    "category": "Halves"
+  },
+  "st Half - Multigoals": {
+    "market_id": "552",
+    "example_name": "1st Half - Multigoals",
+    "outcome_count": 5,
+    "outcomes_example": [
+      "1-2",
+      "1-3",
+      "2-3",
+      "4+"
+    ],
+    "category": "Goals"
+  },
+  "HT Home Team To Score Yes/No": {
+    "market_id": "900022",
+    "example_name": "HT Home Team To Score Yes/No",
+    "outcome_count": 2,
+    "outcomes_example": [
+      "Yes",
+      "No"
+    ],
+    "category": "Player"
+  },
+  "HT Away Team to Score Yes/No": {
+    "market_id": "900021",
+    "example_name": "HT Away Team to Score Yes/No",
+    "outcome_count": 2,
+    "outcomes_example": [
+      "Yes",
+      "No"
+    ],
+    "category": "Player"
+  },
+  "HT Home to Win to Nil Yes/No": {
+    "market_id": "900036",
+    "example_name": "HT Home to Win to Nil Yes/No",
+    "outcome_count": 2,
+    "outcomes_example": [
+      "Yes",
+      "No"
+    ],
+    "category": "Other"
+  },
+  "HT Away to Win to Nil Yes/No": {
+    "market_id": "900037",
+    "example_name": "HT Away to Win to Nil Yes/No",
+    "outcome_count": 2,
+    "outcomes_example": [
+      "Yes",
+      "No"
+    ],
+    "category": "Other"
+  },
+  "st Half - Odd/Even": {
+    "market_id": "74",
+    "example_name": "1st Half - Odd/Even",
+    "outcome_count": 2,
+    "outcomes_example": [
+      "Odd",
+      "Even"
+    ],
+    "category": "Goals"
+  },
+  "HT Home Total Odd/Even": {
+    "market_id": "900032",
+    "example_name": "HT Home Total Odd/Even",
+    "outcome_count": 2,
+    "outcomes_example": [
+      "Even",
+      "Odd"
+    ],
+    "category": "Goals"
+  },
+  "HT Away Total Odd/Even": {
+    "market_id": "900031",
+    "example_name": "HT Away Total Odd/Even",
+    "outcome_count": 2,
+    "outcomes_example": [
+      "Even",
+      "Odd"
+    ],
+    "category": "Goals"
+  },
+  "nd Half - X": {
+    "market_id": "83",
+    "example_name": "2nd Half - 1X2",
+    "outcome_count": 3,
+    "outcomes_example": [
+      "Home",
+      "Draw",
+      "Away"
+    ],
+    "category": "Halves"
+  },
+  "nd Half - Total": {
+    "market_id": "90",
+    "example_name": "2nd Half - Total",
+    "outcome_count": 2,
+    "outcomes_example": [
+      "Over 1",
+      "Under 1"
+    ],
+    "category": "Halves"
+  },
+  "nd Half - Double Chance": {
+    "market_id": "85",
+    "example_name": "2nd Half - Double Chance",
+    "outcome_count": 3,
+    "outcomes_example": [
+      "Home or Draw",
+      "Home or Away",
+      "Draw or Away"
+    ],
+    "category": "Result"
+  },
+  "nd Half - Xth Goal": {
+    "market_id": "84",
+    "example_name": "2nd Half - Xth Goal",
+    "outcome_count": 3,
+    "outcomes_example": [
+      "Home",
+      "None",
+      "Away"
+    ],
+    "category": "Goals"
+  },
+  "nd Half - Handicap X:Y": {
+    "market_id": "87",
+    "example_name": "2nd Half - Handicap X:Y",
+    "outcome_count": 3,
+    "outcomes_example": [
+      "Home (0:1)",
+      "Draw (0:1)",
+      "Away (0:1)"
+    ],
+    "category": "Handicap"
+  },
+  "nd Half - Handicap": {
+    "market_id": "88",
+    "example_name": "2nd Half - Handicap",
+    "outcome_count": 2,
+    "outcomes_example": [
+      "Home (-1.5)",
+      "Away (+1.5)"
+    ],
+    "category": "Handicap"
+  },
+  "nd Half - Home Team Total": {
+    "market_id": "91",
+    "example_name": "2nd Half - Home Team Total",
+    "outcome_count": 2,
+    "outcomes_example": [
+      "Over 0.5",
+      "Under 0.5"
+    ],
+    "category": "Halves"
+  },
+  "nd Half - Away Team Total": {
+    "market_id": "92",
+    "example_name": "2nd Half - Away Team Total",
+    "outcome_count": 2,
+    "outcomes_example": [
+      "Over 0.5",
+      "Under 0.5"
+    ],
+    "category": "Halves"
+  },
+  "nd Half - GG/NG": {
+    "market_id": "95",
+    "example_name": "2nd Half - GG/NG",
+    "outcome_count": 2,
+    "outcomes_example": [
+      "Yes",
+      "No"
+    ],
+    "category": "Goals"
+  },
+  "nd Half - Draw No Bet": {
+    "market_id": "86",
+    "example_name": "2nd Half - Draw No Bet",
+    "outcome_count": 2,
+    "outcomes_example": [
+      "Home",
+      "Away"
+    ],
+    "category": "Result"
+  },
+  "nd Half - Correct Score": {
+    "market_id": "98",
+    "example_name": "2nd Half - Correct Score",
+    "outcome_count": 10,
+    "outcomes_example": [
+      "0:0",
+      "0:1",
+      "0:2",
+      "1:0"
+    ],
+    "category": "Halves"
+  },
+  "nd Half - Exact Goals": {
+    "market_id": "93",
+    "example_name": "2nd Half - Exact Goals",
+    "outcome_count": 3,
+    "outcomes_example": [
+      "0",
+      "1",
+      "2+"
+    ],
+    "category": "Goals"
+  },
+  "nd Half - Home Clean Sheet": {
+    "market_id": "96",
+    "example_name": "2nd Half - Home Clean Sheet",
+    "outcome_count": 2,
+    "outcomes_example": [
+      "Yes",
+      "No"
+    ],
+    "category": "Halves"
+  },
+  "nd Half - Away Clean Sheet": {
+    "market_id": "97",
+    "example_name": "2nd Half - Away Clean Sheet",
+    "outcome_count": 2,
+    "outcomes_example": [
+      "Yes",
+      "No"
+    ],
+    "category": "Halves"
+  },
+  "nd Half - Multigoals": {
+    "market_id": "553",
+    "example_name": "2nd Half - Multigoals",
+    "outcome_count": 5,
+    "outcomes_example": [
+      "1-2",
+      "1-3",
+      "2-3",
+      "4+"
+    ],
+    "category": "Goals"
+  },
+  "nd Half Home to Score Yes/No": {
+    "market_id": "900020",
+    "example_name": "2nd Half Home to Score Yes/No",
+    "outcome_count": 2,
+    "outcomes_example": [
+      "Yes",
+      "No"
+    ],
+    "category": "Halves"
+  },
+  "nd Half Away to Score Yes/No": {
+    "market_id": "900019",
+    "example_name": "2nd Half Away to Score Yes/No",
+    "outcome_count": 2,
+    "outcomes_example": [
+      "Yes",
+      "No"
+    ],
+    "category": "Halves"
+  },
+  "nd Half Home to Win to Nil Y/N": {
+    "market_id": "900038",
+    "example_name": "2nd Half Home to Win to Nil Y/N",
+    "outcome_count": 2,
+    "outcomes_example": [
+      "Yes",
+      "No"
+    ],
+    "category": "Halves"
+  },
+  "nd Half Away to Win to Nil Y/N": {
+    "market_id": "900052",
+    "example_name": "2nd Half Away to Win to Nil Y/N",
+    "outcome_count": 2,
+    "outcomes_example": [
+      "Yes",
+      "No"
+    ],
+    "category": "Halves"
+  },
+  "nd Half - Odd/Even": {
+    "market_id": "94",
+    "example_name": "2nd Half - Odd/Even",
+    "outcome_count": 2,
+    "outcomes_example": [
+      "Odd",
+      "Even"
+    ],
+    "category": "Goals"
+  },
+  "nd Half Home Total Odd/Even": {
+    "market_id": "900029",
+    "example_name": "2nd Half Home Total Odd/Even",
+    "outcome_count": 2,
+    "outcomes_example": [
+      "Even",
+      "Odd"
+    ],
+    "category": "Goals"
+  },
+  "nd Half Away Total Odd/Even": {
+    "market_id": "900030",
+    "example_name": "2nd Half Away Total Odd/Even",
+    "outcome_count": 2,
+    "outcomes_example": [
+      "Even",
+      "Odd"
+    ],
+    "category": "Goals"
+  },
+  "Last Goal": {
+    "market_id": "9",
+    "example_name": "Last Goal",
+    "outcome_count": 3,
+    "outcomes_example": [
+      "Home",
+      "None",
+      "Away"
+    ],
+    "category": "Goals"
+  },
+  "Home No Bet": {
+    "market_id": "12",
+    "example_name": "Home No Bet",
+    "outcome_count": 2,
+    "outcomes_example": [
+      "Draw",
+      "Away"
+    ],
+    "category": "Other"
+  },
+  "Away No Bet": {
+    "market_id": "13",
+    "example_name": "Away No Bet",
+    "outcome_count": 2,
+    "outcomes_example": [
+      "Home",
+      "Draw"
+    ],
+    "category": "Other"
+  },
+  "Winning Margin": {
+    "market_id": "15",
+    "example_name": "Winning Margin",
+    "outcome_count": 7,
+    "outcomes_example": [
+      "Home by 1",
+      "Home by 2",
+      "Home by 3+",
+      "Away by 1"
+    ],
+    "category": "Other"
+  },
+  "Exact Goals": {
+    "market_id": "21",
+    "example_name": "Exact Goals",
+    "outcome_count": 7,
+    "outcomes_example": [
+      "0",
+      "1",
+      "2",
+      "3"
+    ],
+    "category": "Goals"
+  },
+  "Home Team Exact Goals": {
+    "market_id": "23",
+    "example_name": "Home Team Exact Goals",
+    "outcome_count": 4,
+    "outcomes_example": [
+      "0",
+      "1",
+      "2",
+      "3+"
+    ],
+    "category": "Goals"
+  },
+  "Away Team Exact Goals": {
+    "market_id": "24",
+    "example_name": "Away Team Exact Goals",
+    "outcome_count": 4,
+    "outcomes_example": [
+      "0",
+      "1",
+      "2",
+      "3+"
+    ],
+    "category": "Goals"
+  },
+  "Goal Range": {
+    "market_id": "25",
+    "example_name": "Goal Range",
+    "outcome_count": 4,
+    "outcomes_example": [
+      "0-1",
+      "2-3",
+      "4-6",
+      "7+"
+    ],
+    "category": "Goals"
+  },
+  "Which Team To Score": {
+    "market_id": "30",
+    "example_name": "Which Team To Score",
+    "outcome_count": 4,
+    "outcomes_example": [
+      "None",
+      "Only Home",
+      "Only Away",
+      "Both teams"
+    ],
+    "category": "Player"
+  },
+  "Home Team Clean Sheet": {
+    "market_id": "31",
+    "example_name": "Home Team Clean Sheet",
+    "outcome_count": 2,
+    "outcomes_example": [
+      "Yes",
+      "No"
+    ],
+    "category": "Specials"
+  },
+  "Away Team Clean Sheet": {
+    "market_id": "32",
+    "example_name": "Away Team Clean Sheet",
+    "outcome_count": 2,
+    "outcomes_example": [
+      "Yes",
+      "No"
+    ],
+    "category": "Specials"
+  },
+  "Home To Win Both Halves": {
+    "market_id": "48",
+    "example_name": "Home To Win Both Halves",
+    "outcome_count": 2,
+    "outcomes_example": [
+      "Yes",
+      "No"
+    ],
+    "category": "Other"
+  },
+  "Away To Win Both Halves": {
+    "market_id": "49",
+    "example_name": "Away To Win Both Halves",
+    "outcome_count": 2,
+    "outcomes_example": [
+      "Yes",
+      "No"
+    ],
+    "category": "Other"
+  },
+  "Home To Win Either Half": {
+    "market_id": "50",
+    "example_name": "Home To Win Either Half",
+    "outcome_count": 2,
+    "outcomes_example": [
+      "Yes",
+      "No"
+    ],
+    "category": "Result"
+  },
+  "Away To Win Either Half": {
+    "market_id": "51",
+    "example_name": "Away To Win Either Half",
+    "outcome_count": 2,
+    "outcomes_example": [
+      "Yes",
+      "No"
+    ],
+    "category": "Result"
+  },
+  "Home Team Win To Nil": {
+    "market_id": "33",
+    "example_name": "Home Team Win To Nil",
+    "outcome_count": 2,
+    "outcomes_example": [
+      "Yes",
+      "No"
+    ],
+    "category": "Other"
+  },
+  "Away Team Win To Nil": {
+    "market_id": "34",
+    "example_name": "Away Team Win To Nil",
+    "outcome_count": 2,
+    "outcomes_example": [
+      "Yes",
+      "No"
+    ],
+    "category": "Other"
+  },
+  "Highest Scoring Half": {
+    "market_id": "52",
+    "example_name": "Highest Scoring Half",
+    "outcome_count": 3,
+    "outcomes_example": [
+      "1st half",
+      "2nd half",
+      "Equal"
+    ],
+    "category": "Halves"
+  },
+  "Home Highest Scoring Half": {
+    "market_id": "53",
+    "example_name": "Home Highest Scoring Half",
+    "outcome_count": 3,
+    "outcomes_example": [
+      "1st half",
+      "2nd half",
+      "Equal"
+    ],
+    "category": "Halves"
+  },
+  "Away Highest Scoring Half": {
+    "market_id": "54",
+    "example_name": "Away Highest Scoring Half",
+    "outcome_count": 3,
+    "outcomes_example": [
+      "1st half",
+      "2nd half",
+      "Equal"
+    ],
+    "category": "Halves"
+  },
+  "Home Team To Score Yes/No": {
+    "market_id": "900015",
+    "example_name": "Home Team To Score Yes/No",
+    "outcome_count": 2,
+    "outcomes_example": [
+      "Yes",
+      "No"
+    ],
+    "category": "Player"
+  },
+  "Away Team To Score Yes/No": {
+    "market_id": "900014",
+    "example_name": "Away Team To Score Yes/No",
+    "outcome_count": 2,
+    "outcomes_example": [
+      "Yes",
+      "No"
+    ],
+    "category": "Player"
+  },
+  "GG in Both Halves Yes/No": {
+    "market_id": "900027",
+    "example_name": "GG in Both Halves Yes/No",
+    "outcome_count": 2,
+    "outcomes_example": [
+      "Yes",
+      "No"
+    ],
+    "category": "Other"
+  },
+  "No Draw Both Teams To Score Y/N": {
+    "market_id": "900041",
+    "example_name": "No Draw Both Teams To Score Y/N",
+    "outcome_count": 2,
+    "outcomes_example": [
+      "Yes",
+      "No"
+    ],
+    "category": "Player"
+  },
+  "Minutes - X": {
+    "market_id": "105",
+    "example_name": "10 Minutes - 1X2",
+    "outcome_count": 3,
+    "outcomes_example": [
+      "Home",
+      "Draw",
+      "Away"
+    ],
+    "category": "Specials"
+  },
+  "Match Result after X Minutes": {
+    "market_id": "900069",
+    "example_name": "Match Result after X Minutes",
+    "outcome_count": 3,
+    "outcomes_example": [
+      "Home",
+      "Draw",
+      "Away"
+    ],
+    "category": "Result"
+  },
+  "Xth Goal Scored ( Min)": {
+    "market_id": "101",
+    "example_name": "Xth Goal Scored (10 Min)",
+    "outcome_count": 10,
+    "outcomes_example": [
+      "1-10",
+      "11-20",
+      "21-30",
+      "31-40"
+    ],
+    "category": "Goals"
+  },
+  "Corners - Over/Under": {
+    "market_id": "166",
+    "example_name": "Corners - Over/Under",
+    "outcome_count": 2,
+    "outcomes_example": [
+      "Over 8.5",
+      "Under 8.5"
+    ],
+    "category": "Goals"
+  },
+  "Home Team Total Corners": {
+    "market_id": "900300",
+    "example_name": "Home Team Total Corners",
+    "outcome_count": 2,
+    "outcomes_example": [
+      "Over 3.5",
+      "Under 3.5"
+    ],
+    "category": "Corners"
+  },
+  "Away Team Total Corners": {
+    "market_id": "900301",
+    "example_name": "Away Team Total Corners",
+    "outcome_count": 2,
+    "outcomes_example": [
+      "Over 1.5",
+      "Under 1.5"
+    ],
+    "category": "Corners"
+  },
+  "st Half - Home Total Corners": {
+    "market_id": "900302",
+    "example_name": "1st Half - Home Total Corners",
+    "outcome_count": 2,
+    "outcomes_example": [
+      "Over 0.5",
+      "Under 0.5"
+    ],
+    "category": "Halves"
+  },
+  "st Half - Away Total Corners": {
+    "market_id": "900303",
+    "example_name": "1st Half - Away Total Corners",
+    "outcome_count": 2,
+    "outcomes_example": [
+      "Over 0.5",
+      "Under 0.5"
+    ],
+    "category": "Halves"
+  },
+  "X & Over/Under": {
+    "market_id": "37",
+    "example_name": "1X2 & Over/Under",
+    "outcome_count": 6,
+    "outcomes_example": [
+      "Home & Under 1.5",
+      "Home & Over 1.5",
+      "Draw & Under 1.5",
+      "Draw & Over 1.5"
+    ],
+    "category": "Goals"
+  },
+  "X & GG/NG": {
+    "market_id": "35",
+    "example_name": "1X2 & GG/NG",
+    "outcome_count": 6,
+    "outcomes_example": [
+      "Home & yes",
+      "Home & no",
+      "Draw & yes",
+      "Draw & no"
+    ],
+    "category": "Goals"
+  },
+  "Over/Under & GG/NG": {
+    "market_id": "36",
+    "example_name": "Over/Under & GG/NG",
+    "outcome_count": 4,
+    "outcomes_example": [
+      "Over 2.5 & Yes",
+      "Under 2.5 & Yes",
+      "Over 2.5 & No",
+      "Under 2.5 & No"
+    ],
+    "category": "Goals"
+  },
+  "Xth Goal & X": {
+    "market_id": "184",
+    "example_name": "Xth Goal & 1X2",
+    "outcome_count": 7,
+    "outcomes_example": [
+      "Home goal & Home",
+      "Home goal & Draw",
+      "Home goal & Away",
+      "Away goal & Home"
+    ],
+    "category": "Goals"
+  },
+  "Halftime/Fulltime & Total": {
+    "market_id": "818",
+    "example_name": "Halftime/Fulltime & Total",
+    "outcome_count": 14,
+    "outcomes_example": [
+      "Mexico/Mexico & under 1.5",
+      "draw/Mexico & under 1.5",
+      "draw/draw & under 1.5",
+      "draw/South Africa & under 1.5"
+    ],
+    "category": "Halves"
+  },
+  "HT/FT & st Half Total": {
+    "market_id": "819",
+    "example_name": "HT/FT & 1st Half Total",
+    "outcome_count": 12,
+    "outcomes_example": [
+      "draw/Mexico & under 0.5",
+      "draw/draw & under 0.5",
+      "draw/South Africa & under 0.5",
+      "Mexico/Mexico & over 0.5"
+    ],
+    "category": "Halves"
+  },
+  "HT/FT & Exact Goals": {
+    "market_id": "820",
+    "example_name": "HT/FT & Exact Goals",
+    "outcome_count": 36,
+    "outcomes_example": [
+      "draw/draw & 0",
+      "Mexico/Mexico & 1",
+      "draw/Mexico & 1",
+      "draw/South Africa & 1"
+    ],
+    "category": "Goals"
+  },
+  "Double Chance & Total": {
+    "market_id": "547",
+    "example_name": "Double Chance & Total",
+    "outcome_count": 6,
+    "outcomes_example": [
+      "Home/Draw & Under 1.5",
+      "Home/Away & Under 1.5",
+      "Draw/Away & Under 1.5",
+      "Home/Draw & Over 1.5"
+    ],
+    "category": "Result"
+  },
+  "Double Chance & GG/NG": {
+    "market_id": "546",
+    "example_name": "Double Chance & GG/NG",
+    "outcome_count": 6,
+    "outcomes_example": [
+      "Home/Draw & Yes",
+      "Home/Draw & No",
+      "Home/Away & Yes",
+      "Home/Away & No"
+    ],
+    "category": "Result"
+  },
+  "DC & st Half Both Teams Score": {
+    "market_id": "540",
+    "example_name": "DC & 1st Half Both Teams Score",
+    "outcome_count": 6,
+    "outcomes_example": [
+      "Home/Draw & Yes",
+      "Home/Draw & No",
+      "Home/Away & Yes",
+      "Home/Away & No"
+    ],
+    "category": "Halves"
+  },
+  "DC & nd Half Both Teams Score": {
+    "market_id": "541",
+    "example_name": "DC & 2nd Half Both Teams Score",
+    "outcome_count": 6,
+    "outcomes_example": [
+      "Home/Draw & Yes",
+      "Home/Draw & No",
+      "Home/Away & Yes",
+      "Home/Away & No"
+    ],
+    "category": "Halves"
+  },
+  "HT DC and Over/Under": {
+    "market_id": "900042",
+    "example_name": "HT DC and Over/Under",
+    "outcome_count": 6,
+    "outcomes_example": [
+      "Home/Draw & Over 1.5",
+      "Home/Away & Over 1.5",
+      "Draw/Away & Over 1.5",
+      "Home/Draw & Under 1.5"
+    ],
+    "category": "Goals"
+  },
+  "st Half - DC & GG/NG": {
+    "market_id": "542",
+    "example_name": "1st Half - DC & GG/NG",
+    "outcome_count": 6,
+    "outcomes_example": [
+      "Home/Draw & Yes",
+      "Home/Draw & No",
+      "Home/Away & Yes",
+      "Home/Away & No"
+    ],
+    "category": "Goals"
+  },
+  "nd Half - X & Total": {
+    "market_id": "544",
+    "example_name": "2nd Half - 1X2 & Total",
+    "outcome_count": 6,
+    "outcomes_example": [
+      "Home & Under 1.5",
+      "Home & Over 1.5",
+      "Draw & Under 1.5",
+      "Draw & Over 1.5"
+    ],
+    "category": "Halves"
+  },
+  "nd Half - X & GG/NG": {
+    "market_id": "543",
+    "example_name": "2nd Half - 1X2 & GG/NG",
+    "outcome_count": 6,
+    "outcomes_example": [
+      "Home & yes",
+      "Home & no",
+      "Draw & yes",
+      "Draw & no"
+    ],
+    "category": "Goals"
+  },
+  "nd Half DC and Over/Under": {
+    "market_id": "900043",
+    "example_name": "2nd Half DC and Over/Under",
+    "outcome_count": 6,
+    "outcomes_example": [
+      "Home/Draw & Over 1.5",
+      "Home/Away & Over 1.5",
+      "Draw/Away & Over 1.5",
+      "Home/Draw & Under 1.5"
+    ],
+    "category": "Goals"
+  },
+  "nd Half - DC & GG/NG": {
+    "market_id": "545",
+    "example_name": "2nd Half - DC & GG/NG",
+    "outcome_count": 6,
+    "outcomes_example": [
+      "Home/Draw & Yes",
+      "Home/Draw & No",
+      "Home/Away & Yes",
+      "Home/Away & No"
+    ],
+    "category": "Goals"
+  },
+  "st H Res Or Match Res": {
+    "market_id": "1179",
+    "example_name": "1st H Res Or Match Res",
+    "outcome_count": 3,
+    "outcomes_example": [
+      "Home",
+      "Draw",
+      "Away"
+    ],
+    "category": "Other"
+  },
+  "Home Team Or Over X.": {
+    "market_id": "854",
+    "example_name": "Home Team Or Over X.5",
+    "outcome_count": 2,
+    "outcomes_example": [
+      "Yes",
+      "No"
+    ],
+    "category": "Other"
+  },
+  "Home Team Or Under X.": {
+    "market_id": "855",
+    "example_name": "Home Team Or Under X.5",
+    "outcome_count": 2,
+    "outcomes_example": [
+      "Yes",
+      "No"
+    ],
+    "category": "Other"
+  },
+  "Draw Or Over X.": {
+    "market_id": "856",
+    "example_name": "Draw Or Over X.5",
+    "outcome_count": 2,
+    "outcomes_example": [
+      "Yes",
+      "No"
+    ],
+    "category": "Other"
+  },
+  "Draw Or Under X.": {
+    "market_id": "857",
+    "example_name": "Draw Or Under X.5",
+    "outcome_count": 2,
+    "outcomes_example": [
+      "Yes",
+      "No"
+    ],
+    "category": "Other"
+  },
+  "Away Team Or Over X.": {
+    "market_id": "858",
+    "example_name": "Away Team Or Over X.5",
+    "outcome_count": 2,
+    "outcomes_example": [
+      "Yes",
+      "No"
+    ],
+    "category": "Other"
+  },
+  "Away Team Or Under X.": {
+    "market_id": "859",
+    "example_name": "Away Team Or Under X.5",
+    "outcome_count": 2,
+    "outcomes_example": [
+      "Yes",
+      "No"
+    ],
+    "category": "Other"
+  },
+  "Home Team Or GG/NG": {
+    "market_id": "860",
+    "example_name": "Home Team Or GG/NG",
+    "outcome_count": 2,
+    "outcomes_example": [
+      "Yes",
+      "No"
+    ],
+    "category": "Goals"
+  },
+  "Draw Or GG/NG": {
+    "market_id": "861",
+    "example_name": "Draw Or GG/NG",
+    "outcome_count": 2,
+    "outcomes_example": [
+      "Yes",
+      "No"
+    ],
+    "category": "Goals"
+  },
+  "Away Team Or GG/NG": {
+    "market_id": "862",
+    "example_name": "Away Team Or GG/NG",
+    "outcome_count": 2,
+    "outcomes_example": [
+      "Yes",
+      "No"
+    ],
+    "category": "Goals"
+  },
+  "Home Or Any Clean Sheet": {
+    "market_id": "863",
+    "example_name": "Home Or Any Clean Sheet",
+    "outcome_count": 2,
+    "outcomes_example": [
+      "Yes",
+      "No"
+    ],
+    "category": "Specials"
+  },
+  "Draw Or Any Clean Sheet": {
+    "market_id": "864",
+    "example_name": "Draw Or Any Clean Sheet",
+    "outcome_count": 2,
+    "outcomes_example": [
+      "Yes",
+      "No"
+    ],
+    "category": "Specials"
+  },
+  "Away Or Any Clean Sheet": {
+    "market_id": "865",
+    "example_name": "Away Or Any Clean Sheet",
+    "outcome_count": 2,
+    "outcomes_example": [
+      "Yes",
+      "No"
+    ],
+    "category": "Specials"
+  },
+  "Multigoals": {
+    "market_id": "548",
+    "example_name": "Multigoals",
+    "outcome_count": 17,
+    "outcomes_example": [
+      "1-2",
+      "1-3",
+      "1-4",
+      "1-5"
+    ],
+    "category": "Goals"
+  },
+  "Home Team Multigoals": {
+    "market_id": "549",
+    "example_name": "Home Team Multigoals",
+    "outcome_count": 5,
+    "outcomes_example": [
+      "1-2",
+      "1-3",
+      "2-3",
+      "4+"
+    ],
+    "category": "Goals"
+  },
+  "Away Team Multigoals": {
+    "market_id": "550",
+    "example_name": "Away Team Multigoals",
+    "outcome_count": 5,
+    "outcomes_example": [
+      "1-2",
+      "1-3",
+      "2-3",
+      "4+"
+    ],
+    "category": "Goals"
+  },
+  "Multiscores": {
+    "market_id": "551",
+    "example_name": "Multiscores",
+    "outcome_count": 11,
+    "outcomes_example": [
+      "1:0, 2:0 or 3:0",
+      "0:1, 0:2 or 0:3",
+      "4:0, 5:0 or 6:0",
+      "0:4, 0:5 or 0:6"
+    ],
+    "category": "Other"
+  },
+  "Correct score [x:y]": {
+    "market_id": "41",
+    "example_name": "Correct score [x:y]",
+    "outcome_count": 28,
+    "outcomes_example": [
+      "0:0",
+      "1:0",
+      "2:0",
+      "3:0"
+    ],
+    "category": "Other"
+  },
+  "Total Goals from  to X min": {
+    "market_id": "900313",
+    "example_name": "Total Goals from 1 to X min",
+    "outcome_count": 2,
+    "outcomes_example": [
+      "Over 0.5",
+      "Under 0.5"
+    ],
+    "category": "Goals"
+  }
+}

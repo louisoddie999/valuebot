@@ -1,0 +1,21 @@
+# Render Blueprint — always-on FastAPI for ValueBot.
+# Serves predictions/slips/chat/booking from the committed SQLite DB.
+# Enrichment (Sofascore) runs LOCALLY (mobile IP) — refresh the DB + git push to redeploy.
+services:
+  - type: web
+    name: valuebot-api
+    runtime: python
+    plan: free
+    rootDir: .
+    buildCommand: pip install -r requirements-api.txt
+    startCommand: uvicorn api.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /api/health
+    envVars:
+      - key: GOOGLE_AI_API_KEY
+        sync: false          # set in Render dashboard (secret)
+      - key: GEMINI_MODEL
+        value: gemini-2.5-flash
+      - key: DB_PATH
+        value: data/serve.sqlite
+      - key: PYTHON_VERSION
+        value: "3.12"
