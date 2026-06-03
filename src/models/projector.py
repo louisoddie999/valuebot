@@ -23,6 +23,7 @@ HOME_ADJ = 1.06
 AWAY_ADJ = 0.96
 MAXG = 8
 TILT = 0.25          # how strongly supremacy signal tilts expected goals
+ELO_W = 0.30         # Elo supremacy blend weight — backtest-validated (acc +0.3pp, Brier -0.003)
 BLEND = 0.6          # Poisson vs empirical rate (O2.5 / BTTS)
 
 _CACHE: dict = {}    # sb_event_id -> Projection
@@ -67,7 +68,8 @@ class Projection:
         h2h_diff = ((f["h2h_home_wins"] - f["h2h_away_wins"]) / h2h_tot) if h2h_tot else 0.0
         sup = (0.35 * (f["home_form"] - f["away_form"])
                + 0.25 * (f["home_winrate"] - f["away_winrate"])
-               + 0.20 * h2h_diff)
+               + 0.20 * h2h_diff
+               + ELO_W * (f.get("elo_sup") or 0.0))
         tilt = max(-0.6, min(0.6, sup))
         eh = base_h * (1 + TILT * tilt) * HOME_ADJ
         ea = base_a * (1 - TILT * tilt) * AWAY_ADJ

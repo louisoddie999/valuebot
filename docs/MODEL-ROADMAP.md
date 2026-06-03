@@ -6,7 +6,7 @@ Goal: push the prediction model from ~7/10 toward 9/10. Doctrine holds throughou
 ## Buildable now (no paid API)
 - [x] Self-recalibration loop (settled results → confidence correction)
 - [ ] **Per-sport calibration** — separate curve for football vs basketball
-- [ ] **Elo strength prior** — pure results-based team rating, blended into both projectors
+- [x] **Elo strength prior** — backtest-validated (ELO_W=0.30; acc +0.3pp, Brier -0.003). LIVE wiring needs a team-name bridge or API-SPORTS results graph (top-5 leagues only until then).
 - [ ] **Richer stat features** — schedule congestion, home/away splits depth, recent-form weighting
 - [ ] **Multi-model ensemble (data only)** — Poisson/Normal + Elo + form, weighted; NO odds
 
