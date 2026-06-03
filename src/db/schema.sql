@@ -180,3 +180,13 @@ CREATE TABLE IF NOT EXISTS calibration_meta (
 CREATE INDEX IF NOT EXISTS idx_matches_date ON matches(date);
 CREATE INDEX IF NOT EXISTS idx_matches_league_season ON matches(league, season);
 CREATE INDEX IF NOT EXISTS idx_odds_match ON odds(match_id);
+
+-- basketball per-event projection (parallel to sf_features for football)
+CREATE TABLE IF NOT EXISTS bb_features (
+    sb_event_id TEXT PRIMARY KEY,
+    sofa_event  INTEGER,
+    match_score REAL,
+    exp_total   REAL, exp_margin REAL, pts_home REAL, pts_away REAL,
+    home_pf REAL, home_pa REAL, away_pf REAL, away_pa REAL, poss REAL,
+    computed_at TEXT
+);

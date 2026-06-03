@@ -146,6 +146,49 @@ def load_model_legs(min_odds: float, max_odds: float, min_conf: float,
     return legs
 
 
+def load_basketball_legs(min_conf: float, start_date: str, end_date: str) -> list[dict]:
+    """Basketball legs: project per event from bb_features, score each market via the
+    basketball projector. Same leg shape as football so slips/booking are sport-agnostic."""
+    from src.models import basketball_projector as bp
+    from src.models import calibration
+    with connect() as conn:
+        feats = {r["sb_event_id"]: dict(r)
+                 for r in conn.execute("SELECT * FROM bb_features").fetchall()}
+        odds_rows = conn.execute(
+            """SELECT o.event_id, e.home_team, e.away_team, e.tournament, e.category, e.kickoff_ts,
+                      o.market_id, o.market_name, o.specifier, o.outcome_id, o.outcome_desc, o.odds
+               FROM sb_odds o JOIN sb_events e ON e.event_id = o.event_id
+               WHERE e.sport='Basketball' AND o.odds >= 1.20 AND o.odds <= 1.90
+                 AND substr(e.kickoff_ts,1,10) BETWEEN ? AND ?""",
+            (start_date, end_date)).fetchall()
+        cal = calibration.load_curve(conn)
+
+    legs = []
+    for r in odds_rows:
+        f = feats.get(r["event_id"])
+        if not f:
+            continue
+        proj = {"exp_total": f["exp_total"], "exp_margin": f["exp_margin"],
+                "pts_home": f["pts_home"], "pts_away": f["pts_away"], "poss": f["poss"]}
+        mp = bp.model_prob_for(proj, r["market_id"], r["specifier"], r["outcome_desc"])
+        if mp is None:
+            continue
+        mp = max(0.02, min(0.97, mp))   # no pick is truly 100% — credible ceiling
+        mp = calibration.apply(mp, cal)
+        if mp < min_conf:
+            continue
+        legs.append({
+            "event_id": r["event_id"], "match": f"{r['home_team']} v {r['away_team']}",
+            "tournament": r["tournament"], "country": r["category"], "kickoff": r["kickoff_ts"],
+            "market": r["market_name"], "market_id": r["market_id"],
+            "specifier": r["specifier"], "outcome_id": r["outcome_id"],
+            "selection": r["outcome_desc"], "odds": round(r["odds"], 2),
+            "prob": mp, "confidence": round(mp, 4),
+            "reason": bp.reason(proj, r["market_id"], r["outcome_desc"]),
+        })
+    return legs
+
+
 def build_slip(legs: list[dict], min_legs: int, max_legs: int,
                leg_min: float, leg_max: float) -> dict | None:
     """

@@ -107,6 +107,48 @@ def features_for(home_name, away_name, date_iso, kickoff_ts=None):
             "sofa_event": ev.get("id")}
 
 
+def enrich_scope(start_date, end_date, cap=2000):
+    """For each basketball sb_event in [start,end], compute + store projection in bb_features."""
+    from src.db.db import connect, init_schema
+    from src.models import basketball_projector as bp
+    init_schema()
+    now = datetime.now(timezone.utc).isoformat()
+    with connect() as conn:
+        rows = conn.execute(
+            "SELECT event_id, home_team, away_team, kickoff_ts FROM sb_events "
+            "WHERE sport='Basketball' AND substr(kickoff_ts,1,10) BETWEEN ? AND ? LIMIT ?",
+            (start_date, end_date, cap)).fetchall()
+        done = 0
+        for i, r in enumerate(rows, 1):
+            ko_ts = None
+            try:
+                if r["kickoff_ts"]:
+                    ko_ts = int(datetime.fromisoformat(r["kickoff_ts"]).timestamp())
+            except Exception:
+                ko_ts = None
+            feat = features_for(r["home_team"], r["away_team"], (r["kickoff_ts"] or "")[:10], ko_ts)
+            if not feat:
+                continue
+            proj = bp.project_from_scores(feat["home"], feat["away"])
+            if not proj:
+                continue
+            conn.execute(
+                "INSERT OR REPLACE INTO bb_features(sb_event_id,sofa_event,match_score,exp_total,"
+                "exp_margin,pts_home,pts_away,home_pf,home_pa,away_pf,away_pa,poss,computed_at) "
+                "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)",
+                (r["event_id"], feat.get("sofa_event"), feat.get("match_score"),
+                 proj["exp_total"], proj["exp_margin"], proj["pts_home"], proj["pts_away"],
+                 feat["home"]["pts_for"], feat["home"]["pts_against"],
+                 feat["away"]["pts_for"], feat["away"]["pts_against"], proj["poss"], now))
+            done += 1
+            if i % 5 == 0:
+                conn.commit()
+                print(f"  {i}/{len(rows)}, {done} enriched")
+        conn.commit()
+    print(f"Basketball enrichment done: {done}/{len(rows)}")
+    return done
+
+
 if __name__ == "__main__":
     # live end-to-end test on a real upcoming NBA game
     d = _get("/sport/basketball/scheduled-events/2026-06-04") or {}

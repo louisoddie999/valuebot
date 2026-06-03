@@ -52,11 +52,14 @@ def _ms_to_iso(ms) -> str | None:
     return datetime.fromtimestamp(int(ms) / 1000, tz=timezone.utc).isoformat()
 
 
-def list_events(max_events: int) -> list[str]:
+SPORT_IDS = {"football": "sr:sport:1", "basketball": "sr:sport:2"}
+
+
+def list_events(max_events: int, sport_id: str = "sr:sport:1") -> list[str]:
     ids: list[str] = []
     page = 1
     while len(ids) < max_events:
-        url = (f"{BASE}/pcUpcomingEvents?sportId=sr:sport:1&marketId=1"
+        url = (f"{BASE}/pcUpcomingEvents?sportId={sport_id}&marketId=1"
                f"&pageSize=50&pageNum={page}&option=1")
         d = _get(url)
         if not d or not d.get("tournaments"):
@@ -124,10 +127,11 @@ def store_event(conn, ev: dict) -> int:
     return rows
 
 
-def run(max_events: int = 2000):
+def run(max_events: int = 2000, sport: str = "football"):
     init_schema()
-    print(f"Listing SportyBet football events (cap {max_events}) ...")
-    ids = list_events(max_events)
+    sid = SPORT_IDS.get(sport, "sr:sport:1")
+    print(f"Listing SportyBet {sport} events (cap {max_events}) ...")
+    ids = list_events(max_events, sid)
     print(f"  {len(ids)} events to ingest")
 
     ev_count = odd_count = 0
