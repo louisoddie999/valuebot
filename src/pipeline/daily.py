@@ -33,7 +33,7 @@ def _log(msg: str, lines: list[str]):
     lines.append(line)
 
 
-def run(scope: str, board_cap: int, enrich_cap: int):
+def run(scope: str, board_cap: int, enrich_cap: int, bball: bool = True):
     lines: list[str] = []
     start_d, end_d, label = parse_scope(scope)
     _log(f"DAILY PIPELINE — scope={label} [{start_d}..{end_d}] board={board_cap} enrich={enrich_cap}", lines)
@@ -51,6 +51,17 @@ def run(scope: str, board_cap: int, enrich_cap: int):
         sofascore.run_scope(start_d, end_d, enrich_cap)
     except Exception as e:
         _log(f"  ! enrichment failed: {e}", lines)
+
+    # 2b. Basketball: board ingest + per-event projection (NBA/EuroLeague/etc.)
+    if bball:
+        try:
+            _log("Step 2b: ingesting basketball board + projecting ...", lines)
+            sportybet_ingest.run(min(board_cap, 400), sport="basketball")
+            from src.ingest import sofascore_basketball
+            bn = sofascore_basketball.enrich_scope(start_d, end_d, enrich_cap)
+            _log(f"  basketball projected: {bn}", lines)
+        except Exception as e:
+            _log(f"  ! basketball step failed: {e}", lines)
 
     # 3. settle finished picks + self-recalibrate the confidence model
     try:
