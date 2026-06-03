@@ -57,7 +57,7 @@ export default function FixturesPage() {
         <div>
           <h1 className="font-mono text-2xl font-bold tracking-tight">Fixtures</h1>
           <p className="text-muted text-sm mt-1 tnum">
-            <span className="text-text">{dateLine || "…"}</span> · {label} · {rows.length} picks
+            <span className="text-text">{dateLine || "…"}</span> · {label} · <span className="text-text">{base.length - hiddenCount}</span> picks of {base.length} fixtures
           </p>
           <div className="mt-2 flex items-center gap-4 flex-wrap">
             <ConfidenceLegend />
