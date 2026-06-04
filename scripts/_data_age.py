@@ -1,12 +1,23 @@
-"""Print hours since last enrichment (sf_features + bb_features), or 999 if none."""
+"""Print hours since last enrichment. Standalone (no src import) so valuebot.bat can call it."""
+import os, sqlite3
 from datetime import datetime, timezone
-from src.db.db import connect
-def _age(ts):
+
+root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+db = os.environ.get("DB_PATH") or os.path.join(root, "data", "soccer_value.sqlite")
+if not os.path.isabs(db):
+    db = os.path.join(root, db)
+
+def age(ts):
     if not ts: return 9999.0
-    try: return (datetime.now(timezone.utc) - datetime.fromisoformat(ts)).total_seconds()/3600
+    try: return (datetime.now(timezone.utc) - datetime.fromisoformat(ts)).total_seconds() / 3600
     except Exception: return 9999.0
-with connect() as c:
+
+try:
+    c = sqlite3.connect(db)
     a = c.execute("SELECT MAX(computed_at) FROM sf_features").fetchone()[0]
     try: b = c.execute("SELECT MAX(computed_at) FROM bb_features").fetchone()[0]
     except Exception: b = None
-print(f"{min(_age(a), _age(b)):.1f}")
+    c.close()
+    print(f"{min(age(a), age(b)):.1f}")
+except Exception:
+    print("9999")
