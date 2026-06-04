@@ -23,7 +23,16 @@ function Invoke-Refresh([string]$why) {
 try {
   Write-Host "============ ValueBot (single command) ============" -ForegroundColor Cyan
   Write-Host " scope=$Scope  auto-refresh ${RefreshHours}h  port=$PORT" -ForegroundColor DarkGray
-  Invoke-Refresh "startup"
+  # skip startup refresh if data is still fresh (avoids re-ingest on accidental restart)
+  $ageH = 9999.0
+  try { $ageH = [double](python scripts\_data_age.py 2>$null) } catch {}
+  if ($ageH -lt $RefreshHours) {
+    Write-Host ("Data fresh ({0:N1}h old < {1}h) - skipping startup refresh, serving now." -f $ageH, $RefreshHours) -ForegroundColor Green
+    $script:next = (Get-Date).AddHours($RefreshHours - $ageH)
+  } else {
+    Invoke-Refresh "startup"
+    $script:next = (Get-Date).AddHours($RefreshHours)
+  }
   Get-NetTCPConnection -LocalPort $PORT -State Listen -EA SilentlyContinue |
     Select-Object -Expand OwningProcess -Unique | ForEach-Object { Stop-Process -Id $_ -Force -EA SilentlyContinue }
   Write-Host "==> API on http://127.0.0.1:$PORT (full DB)" -ForegroundColor Cyan
@@ -43,7 +52,7 @@ try {
   }
   Write-Host ""
   if ($ready) { Write-Host "Dashboard ready." -ForegroundColor Green; Start-Process "http://localhost:3000" }
-  else { Write-Host "Dashboard slow to compile — open http://localhost:3000 manually in a minute." -ForegroundColor Yellow }
+  else { Write-Host "Dashboard slow to compile - open http://localhost:3000 manually in a minute." -ForegroundColor Yellow }
 
   $publicUrl = $null
   if ($env:NGROK_DOMAIN -and (Get-Command ngrok -EA SilentlyContinue)) {
@@ -69,7 +78,7 @@ try {
   }
   Write-Host "`n  DASHBOARD:  http://localhost:3000" -ForegroundColor Green
   Write-Host "ValueBot LIVE (API + dashboard + tunnel). Auto-refresh every ${RefreshHours}h. Ctrl+C to stop." -ForegroundColor Cyan
-  $next = (Get-Date).AddHours($RefreshHours)
+  $next = $script:next
   while ($true) { Start-Sleep -Seconds 60; if ((Get-Date) -ge $next) { Invoke-Refresh "scheduled"; $next = (Get-Date).AddHours($RefreshHours) } }
 }
 finally { Stop-All; if ($api -and -not $api.HasExited) { $api | Stop-Process -Force -EA SilentlyContinue } }
