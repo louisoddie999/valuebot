@@ -51,8 +51,36 @@ def health():
     return {"status": "ok", "events": ev, "enriched": ft}
 
 
+
+# ---- response cache: bust automatically when data refreshes ----
+_RESP_CACHE: dict = {}
+
+def _data_version():
+    try:
+        with connect() as _c:
+            a = _c.execute("SELECT MAX(computed_at) FROM sf_features").fetchone()[0] or ""
+            b = _c.execute("SELECT MAX(computed_at) FROM bb_features").fetchone()[0] or ""
+        return f"{a}|{b}"
+    except Exception:
+        return "0"
+
+def _cache_get(key):
+    return _RESP_CACHE.get(key)
+
+def _cache_put(key, val):
+    ver = key[-1]
+    for k in list(_RESP_CACHE):       # drop stale-version entries, keep current
+        if k[-1] != ver:
+            del _RESP_CACHE[k]
+    _RESP_CACHE[key] = val
+    return val
+
 @app.get("/api/fixtures")
 def fixtures(scope: str = "today", sport: str = "football"):
+    _ck = ("fix", sport, scope, _data_version())
+    _hit = _cache_get(_ck)
+    if _hit is not None:
+        return _hit
     start_d, end_d, label = parse_scope(scope)
     acc = _cfg()
     if sport == "basketball":
@@ -89,8 +117,8 @@ def fixtures(scope: str = "today", sport: str = "football"):
             "league": r["tournament"], "country": r["category"], "kickoff": r["kickoff_ts"],
             "enriched": bool(r["enriched"]), "top_pick": top.get(r["event_id"]),
         })
-    return {"scope": label, "sport": sport, "start": start_d, "end": end_d, "count": len(out),
-            "updated": updated, "fixtures": out}
+    return _cache_put(_ck, {"scope": label, "sport": sport, "start": start_d, "end": end_d,
+            "count": len(out), "updated": updated, "fixtures": out})
 
 
 @app.get("/api/match/{event_id}")
@@ -129,6 +157,10 @@ def match(event_id: str):
 
 @app.get("/api/slips")
 def slips(scope: str = "today", sport: str = "football"):
+    _ck = ("slips", sport, scope, _data_version())
+    _hit = _cache_get(_ck)
+    if _hit is not None:
+        return _hit
     start_d, end_d, label = parse_scope(scope)
     cfg = load_config()
     acc = cfg["accumulators"]
@@ -159,7 +191,7 @@ def slips(scope: str = "today", sport: str = "football"):
             }
             for s in chunks
         ]
-    return result
+    return _cache_put(_ck, result)
 
 
 class BookingLeg(BaseModel):
