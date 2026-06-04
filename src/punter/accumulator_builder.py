@@ -122,6 +122,7 @@ def load_model_legs(min_odds: float, max_odds: float, min_conf: float,
         ).fetchall()
         cal = calibration.load_curve(conn, "football")   # per-sport learned correction
         _eloidx = _elo.load_index(conn)   # live Elo (top-5; absent -> no effect)
+    _elo_memo = {}   # per-event cache (fuzzy match is expensive — do once per event, not per odds row)
 
     legs = []
     for r in odds_rows:
@@ -129,7 +130,10 @@ def load_model_legs(min_odds: float, max_odds: float, min_conf: float,
         if not f:
             continue
         f["_market_name"] = r["market_name"]   # for card-market detection
-        f["elo_sup"] = _elo.live_sup(r["home_team"], r["away_team"], _eloidx)
+        _ek = r["event_id"]
+        if _ek not in _elo_memo:
+            _elo_memo[_ek] = _elo.live_sup(r["home_team"], r["away_team"], _eloidx)
+        f["elo_sup"] = _elo_memo[_ek]
         mp = projector.model_prob_for(f, r["market_id"], r["specifier"], r["outcome_desc"])
         if mp is None:
             continue
