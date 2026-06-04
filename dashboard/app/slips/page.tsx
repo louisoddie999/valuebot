@@ -5,6 +5,7 @@ import { getSlips, createBooking, fmtKick, Slips, Slip, SCOPES, SPORTS } from "@
 import { Card, ConfChip, Odds, Spinner, ScopeTabs } from "@/components/ui";
 import { Ticket, ExternalLink, Copy, Check, Share2 } from "lucide-react";
 import { BuildChat } from "@/components/buildchat";
+import { AddButton, useBetslip } from "@/components/betslip";
 
 const TIERS = ["SAFE", "MID", "LONGSHOT"];
 const TIER_DESC: Record<string, string> = {
@@ -34,6 +35,11 @@ export default function SlipsPage() {
 
   const subSlips: Slip[] = data?.tiers?.[tier] ?? [];
   const slip: Slip | null = subSlips[sub] ?? null;
+  const { add } = useBetslip();
+  const toSel = (l: any) => ({ event_id: l.event_id, match: l.match, market: l.market,
+    market_id: l.market_id, specifier: l.specifier, outcome_id: l.outcome_id,
+    selection: l.selection, odds: l.odds, confidence: l.confidence,
+    league: l.league, country: l.country, kickoff: l.kickoff });
   const label = subSlips.length > 1 ? `${tier} ${sub + 1}` : tier;
 
   async function copyCode() {
@@ -124,6 +130,10 @@ export default function SlipsPage() {
                 <div className="text-xs text-muted">est. hit chance</div>
                 <div className="font-mono text-xl tnum">{slip.hit_estimate.toFixed(2)}%</div>
               </div>
+              <button onClick={() => slip.legs.forEach((l) => add(toSel(l)))}
+                className="flex items-center gap-2 rounded-lg border border-primary/50 px-3 py-2.5 text-sm font-semibold text-primary hover:bg-primary/10 transition">
+                + Add all {slip.legs.length}
+              </button>
               <button onClick={book} disabled={bookingBusy}
                 className="flex items-center gap-2 rounded-lg bg-accent px-4 py-2.5 text-sm font-semibold text-black hover:brightness-110 disabled:opacity-50 transition">
                 <Ticket size={16} /> {bookingBusy ? "Generating…" : "Booking code"}
@@ -167,7 +177,10 @@ export default function SlipsPage() {
                   <div className="text-sm font-medium">{l.market} — {l.selection}</div>
                   <div className="text-xs text-muted mt-0.5">{l.reason}</div>
                 </div>
-                <div className="flex items-center gap-2.5 shrink-0"><ConfChip c={l.confidence} /> <Odds v={l.odds} /></div>
+                <div className="flex flex-col items-end gap-1.5 shrink-0">
+                  <div className="flex items-center gap-2.5"><ConfChip c={l.confidence} /> <Odds v={l.odds} /></div>
+                  <AddButton sel={toSel(l)} />
+                </div>
               </div>
             ))}
           </div>
