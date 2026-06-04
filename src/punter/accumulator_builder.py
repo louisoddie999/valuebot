@@ -117,8 +117,10 @@ def load_model_legs(min_odds: float, max_odds: float, min_conf: float,
                       o.odds, o.book_prob
                FROM sb_odds o JOIN sb_events e ON e.event_id = o.event_id
                WHERE o.odds >= ? AND o.odds <= ?
-                 AND substr(e.kickoff_ts, 1, 10) BETWEEN ? AND ?""",
-            (min_odds, max_odds, start_date, end_date),
+                 AND substr(e.kickoff_ts, 1, 10) BETWEEN ? AND ?
+                 AND (e.kickoff_ts IS NULL OR e.kickoff_ts > ?)""",
+            (min_odds, max_odds, start_date, end_date,
+             datetime.now(timezone.utc).isoformat()),
         ).fetchall()
         cal = calibration.load_curve(conn, "football")   # per-sport learned correction
         _eloidx = _elo.load_index(conn)   # live Elo (top-5; absent -> no effect)
@@ -166,8 +168,9 @@ def load_basketball_legs(min_conf: float, start_date: str, end_date: str) -> lis
                       o.market_id, o.market_name, o.specifier, o.outcome_id, o.outcome_desc, o.odds
                FROM sb_odds o JOIN sb_events e ON e.event_id = o.event_id
                WHERE e.sport='Basketball' AND o.odds >= 1.20 AND o.odds <= 1.90
-                 AND substr(e.kickoff_ts,1,10) BETWEEN ? AND ?""",
-            (start_date, end_date)).fetchall()
+                 AND substr(e.kickoff_ts,1,10) BETWEEN ? AND ?
+                 AND (e.kickoff_ts IS NULL OR e.kickoff_ts > ?)""",
+            (start_date, end_date, datetime.now(timezone.utc).isoformat())).fetchall()
         cal = calibration.load_curve(conn, "basketball")
 
     legs = []

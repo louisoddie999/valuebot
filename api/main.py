@@ -107,7 +107,8 @@ def fixtures(scope: str = "today", sport: str = "football"):
                       (SELECT 1 FROM {feat_table} f WHERE f.sb_event_id=e.event_id) AS enriched
                FROM sb_events e
                WHERE e.sport IN ({ph}) AND substr(e.kickoff_ts,1,10) BETWEEN ? AND ?
-               ORDER BY e.kickoff_ts""", (*sports, start_d, end_d)).fetchall()
+                 AND (e.kickoff_ts IS NULL OR e.kickoff_ts > ?)
+               ORDER BY e.kickoff_ts""", (*sports, start_d, end_d, datetime.now(timezone.utc).isoformat())).fetchall()
         updated = c.execute(f"SELECT MAX(computed_at) FROM {feat_table}").fetchone()[0]
 
     out = []
