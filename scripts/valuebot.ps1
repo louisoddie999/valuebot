@@ -42,6 +42,7 @@ try {
   # local dashboard UI (Next dev) on :3000, pointed at the local API
   Write-Host "==> Starting dashboard UI on http://localhost:3000" -ForegroundColor Cyan
   "NEXT_PUBLIC_API_BASE=http://127.0.0.1:$PORT" | Set-Content (Join-Path $proj 'dashboard\.env.local') -NoNewline
+  Remove-Item -Recurse -Force (Join-Path $proj 'dashboard\.next') -EA SilentlyContinue   # clear stale build cache (prevents unstyled/CSS-404 after crashes)
   Start-Process -WindowStyle Minimized -WorkingDirectory (Join-Path $proj 'dashboard') cmd.exe -ArgumentList '/c','npm run dev'
   Write-Host "    (Next dev first-compile takes ~2-3 min; waiting until it answers before opening browser)" -ForegroundColor DarkGray
   $ready = $false
