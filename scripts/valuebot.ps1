@@ -34,8 +34,16 @@ try {
   Write-Host "==> Starting dashboard UI on http://localhost:3000" -ForegroundColor Cyan
   "NEXT_PUBLIC_API_BASE=http://127.0.0.1:$PORT" | Set-Content (Join-Path $proj 'dashboard\.env.local') -NoNewline
   Start-Process -WindowStyle Minimized -WorkingDirectory (Join-Path $proj 'dashboard') cmd.exe -ArgumentList '/c','npm run dev'
-  Start-Sleep 8
-  Start-Process "http://localhost:3000"   # open it in the default browser
+  Write-Host "    (Next dev first-compile takes ~2-3 min; waiting until it answers before opening browser)" -ForegroundColor DarkGray
+  $ready = $false
+  for ($i = 0; $i -lt 90 -and -not $ready; $i++) {   # up to ~4.5 min
+    Start-Sleep 3
+    try { $r = Invoke-WebRequest "http://localhost:3000" -TimeoutSec 4 -UseBasicParsing; if ($r.StatusCode -eq 200) { $ready = $true } } catch {}
+    if ($i % 5 -eq 0) { Write-Host "." -NoNewline }
+  }
+  Write-Host ""
+  if ($ready) { Write-Host "Dashboard ready." -ForegroundColor Green; Start-Process "http://localhost:3000" }
+  else { Write-Host "Dashboard slow to compile — open http://localhost:3000 manually in a minute." -ForegroundColor Yellow }
 
   $publicUrl = $null
   if ($env:NGROK_DOMAIN -and (Get-Command ngrok -EA SilentlyContinue)) {
