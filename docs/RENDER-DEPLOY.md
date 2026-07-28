@@ -12,7 +12,7 @@ refresh the DB and `git push` to redeploy.
 ## One-time setup
 1. **Push to GitHub** (private repo is fine):
    ```bash
-   cd C:/Users/FX/claude-workspace/projects/SOCCER-VALUE-BOT
+   cd path/to/valuebot
    git init            # if not already a repo
    git add -A
    git commit -m "ValueBot API for Render"

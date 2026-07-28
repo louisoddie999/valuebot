@@ -26,7 +26,7 @@ cd dashboard && npm run dev
 Register a 7:00 AM daily job:
 ```
 schtasks /Create /SC DAILY /ST 07:00 /TN "ValueBot Daily" ^
-  /TR "C:\Users\FX\claude-workspace\projects\SOCCER-VALUE-BOT\scripts\run-daily.bat"
+  /TR "C:\path\to\valuebot\scripts\run-daily.bat"
 ```
 Check / remove:
 ```

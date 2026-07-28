@@ -37,8 +37,8 @@ bankroll:
 
 # Accumulator builder tiers (target combined odds range)
 accumulators:
-  prob_source: model        # confidence-based predictions from stats (validated, calibrated)
-  min_confidence: 0.65      # only predict picks the data backs at >= 65% (proven ~62-74% real)
+  prob_source: model        # confidence-based predictions from the selected model
+  min_confidence: 0.65      # experimental threshold; validate against unseen data
   min_leg_odds: 1.20        # no junk near-certain legs (>= 1.20)
   max_leg_odds: 1.90        # HARD per-leg ceiling 1.90, any tier (longshot = MORE legs, not bigger-odds legs)
   # Tiers defined by LEG COUNT (combined odds emerge from stacking modest legs).

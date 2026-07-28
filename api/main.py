@@ -419,7 +419,12 @@ def chat(req: ChatReq):
 
 @app.get("/api/accuracy")
 def accuracy():
-    # validated on 8,263 top-5 matches (walk-forward, no leakage)
+    """Return calibration derived from locally settled records.
+
+    This public reference intentionally does not ship headline benchmark values.
+    Reproduce any evaluation against a documented, time-ordered dataset before
+    publishing an accuracy or profitability claim.
+    """
     from src.db.db import connect as _connect
     from src.models import calibration as _cal
     try:
@@ -432,20 +437,14 @@ def accuracy():
     return {
         "live_calibration": live,
         "live_calibration_basketball": live_bball,
-        "validated_matches": 8263,
-        "calibration": [
-            {"bucket": "50-60%", "predicted": 55, "actual": 54.1, "n": 14602},
-            {"bucket": "60-70%", "predicted": 65, "actual": 62.3, "n": 10607},
-            {"bucket": "70-80%", "predicted": 75, "actual": 73.9, "n": 13602},
-            {"bucket": "80-90%", "predicted": 84, "actual": 81.4, "n": 5821},
-            {"bucket": "90%+", "predicted": 92, "actual": 85.7, "n": 453},
-        ],
-        "markets": [
-            {"market": "Double Chance", "confidence": 78, "hit": 77.2},
-            {"market": "O/U 1.5", "confidence": 77, "hit": 77.2},
-            {"market": "O/U 3.5", "confidence": 68, "hit": 68.0},
-            {"market": "O/U 2.5", "confidence": 60, "hit": 56.0},
-            {"market": "BTTS", "confidence": 58, "hit": 54.0},
-            {"market": "1X2", "confidence": 51, "hit": 50.4},
-        ],
+        "validation": {
+            "status": "not_bundled",
+            "message": (
+                "Run the walk-forward utilities on a documented dataset to "
+                "produce reproducible benchmark results."
+            ),
+        },
+        "validated_matches": 0,
+        "calibration": [],
+        "markets": [],
     }

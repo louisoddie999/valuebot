@@ -25,7 +25,9 @@ export default function AccuracyPage() {
         <h1 className="font-mono text-2xl font-bold tracking-tight">Accuracy & Trust</h1>
       </div>
       <p className="text-muted text-sm mb-6 tnum">
-        Validated walk-forward on {d.validated_matches.toLocaleString()} matches — no look-ahead. Does an X% prediction land ~X%?
+        {d.validated_matches > 0
+          ? `Validated walk-forward on ${d.validated_matches.toLocaleString()} matches — no look-ahead.`
+          : "Live calibration uses locally settled records. No precomputed public benchmark is bundled."}
       </p>
 
       {d.live_calibration && (() => {
@@ -73,34 +75,44 @@ export default function AccuracyPage() {
         );
       })()}
 
-      <Card className="p-5 mb-5">
-        <h2 className="font-mono font-semibold mb-4">Baseline calibration — predicted vs actual (backtest)</h2>
-        <div className="grid gap-3">
-          {d.calibration.map((c: any) => (
-            <div key={c.bucket} className="grid grid-cols-[80px_1fr_auto] items-center gap-3">
-              <span className="tnum text-sm text-muted">{c.bucket}</span>
-              {bar(c.actual)}
-              <span className="tnum text-sm">
-                <span className="text-muted">{c.predicted}% →</span> <span className="font-semibold text-good">{c.actual}%</span>
-                <span className="text-muted/60 ml-2">n={c.n.toLocaleString()}</span>
-              </span>
-            </div>
-          ))}
-        </div>
-        <p className="text-xs text-muted mt-4">Actual ≈ predicted across every band → predictions are trustworthy.</p>
-      </Card>
+      {d.calibration.length > 0 ? (
+        <Card className="p-5 mb-5">
+          <h2 className="font-mono font-semibold mb-4">Baseline calibration — predicted vs actual</h2>
+          <div className="grid gap-3">
+            {d.calibration.map((c: any) => (
+              <div key={c.bucket} className="grid grid-cols-[80px_1fr_auto] items-center gap-3">
+                <span className="tnum text-sm text-muted">{c.bucket}</span>
+                {bar(c.actual)}
+                <span className="tnum text-sm">
+                  <span className="text-muted">{c.predicted}% →</span> <span className="font-semibold text-good">{c.actual}%</span>
+                  <span className="text-muted/60 ml-2">n={c.n.toLocaleString()}</span>
+                </span>
+              </div>
+            ))}
+          </div>
+        </Card>
+      ) : (
+        <Card className="p-5 mb-5">
+          <h2 className="font-mono font-semibold mb-2">Reproducible benchmark required</h2>
+          <p className="text-sm text-muted">
+            Run the walk-forward validation utilities on a documented, time-ordered dataset before presenting benchmark results.
+          </p>
+        </Card>
+      )}
 
-      <Card className="p-5">
-        <h2 className="font-mono font-semibold mb-4">By market — most-likely pick hit-rate</h2>
-        <div className="grid sm:grid-cols-2 gap-2.5">
-          {d.markets.map((m: any) => (
-            <div key={m.market} className="flex items-center justify-between rounded-lg border border-border bg-surface2/50 px-4 py-2.5">
-              <span className="text-sm">{m.market}</span>
-              <span className="tnum text-sm"><span className="text-muted">{m.confidence}% →</span> <span className="font-semibold">{m.hit}%</span></span>
-            </div>
-          ))}
-        </div>
-      </Card>
+      {d.markets.length > 0 && (
+        <Card className="p-5">
+          <h2 className="font-mono font-semibold mb-4">By market — observed hit rate</h2>
+          <div className="grid sm:grid-cols-2 gap-2.5">
+            {d.markets.map((m: any) => (
+              <div key={m.market} className="flex items-center justify-between rounded-lg border border-border bg-surface2/50 px-4 py-2.5">
+                <span className="text-sm">{m.market}</span>
+                <span className="tnum text-sm"><span className="text-muted">{m.confidence}% →</span> <span className="font-semibold">{m.hit}%</span></span>
+              </div>
+            ))}
+          </div>
+        </Card>
+      )}
     </div>
   );
 }

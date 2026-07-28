@@ -2,8 +2,8 @@
 
 **Version:** 1.0
 **Date:** 2026-06-02
-**Author:** Quant Analyst + 25yr Punter (acting)
-**Status:** Architecture phase — approved scope, pre-build
+**Author:** Louis Odiatu
+**Status:** Living technical design
 
 ---
 
@@ -18,7 +18,7 @@ This system is a **value-detection engine**. Its single job:
 > probability implied by Stake.com / SportyBet odds, and flag **only** the bets where our
 > estimate says the odds are mispriced in our favour (positive expected value).
 
-Profit comes from **selective betting on mispriced odds + disciplined staking**, proven by
+The hypothesis is tested through **selective market comparison + disciplined staking**, evaluated by
 **backtest before any real money moves**. If the backtest doesn't show a positive edge after
 the bookmaker margin, we do not bet. That honesty is the whole product.
 
